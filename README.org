@@ -1,0 +1,6 @@
+* jgit2
+Java bindings for [[https://libgit2.org/][libgit2]]
+** License
+Copyright © 2025 Sergio Navarro
+
+Distributed under the [[https://opensource.org/licenses/mit][MIT License]].
