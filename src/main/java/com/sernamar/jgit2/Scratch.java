@@ -9,12 +9,13 @@ import java.nio.file.Paths;
 import static com.sernamar.jgit2.bindings.git2_1.git_libgit2_init;
 import static com.sernamar.jgit2.bindings.git2_1.git_libgit2_shutdown;
 import static com.sernamar.jgit2.bindings.git2_2.*;
+import static com.sernamar.jgit2.utils.GitError.getGitErrorMessage;
 
 public class Scratch {
     public static void main(String[] args) {
         // Initialize libgit2
         if (git_libgit2_init() < 0) {
-            throw new RuntimeException("Failed to initialize libgit2");
+            throw new RuntimeException("Failed to initialize libgit2: " + getGitErrorMessage());
         }
 
         String path = Paths.get("").toAbsolutePath().toString();
@@ -24,7 +25,7 @@ public class Scratch {
             MemorySegment pathSegment = arena.allocateFrom(path);
             int ret = git_repository_open(repoSegment, pathSegment);
             if (ret < 0) {
-                throw new RuntimeException("Failed to open repository");
+                throw new RuntimeException("Failed to open repository: " + getGitErrorMessage());
             }
             MemorySegment repoPtr = repoSegment.get(C_POINTER, 0);
 
@@ -34,14 +35,14 @@ public class Scratch {
             MemorySegment refNameSegment = arena.allocateFrom(refName);
             ret = git_reference_name_to_id(oidSegment, repoPtr, refNameSegment);
             if (ret < 0) {
-                throw new RuntimeException("Failed to lookup ref");
+                throw new RuntimeException("Failed to get the OID of main branch: " + getGitErrorMessage());
             }
 
             // Get commit
             MemorySegment commitSegment = arena.allocate(C_POINTER);
             ret = git_commit_lookup(commitSegment, repoPtr, oidSegment);
             if (ret < 0) {
-                throw new RuntimeException("Failed to lookup commit");
+                throw new RuntimeException("Failed to get the last commit: " + getGitErrorMessage());
             }
             MemorySegment commitPtr = commitSegment.get(C_POINTER, 0);
 
@@ -53,7 +54,7 @@ public class Scratch {
 
         // Shutdown libgit2
         if (git_libgit2_shutdown() < 0) {
-            throw new RuntimeException("Failed to shutdown libgit2");
+            throw new RuntimeException("Failed to shutdown libgit2: " + getGitErrorMessage());
         }
     }
 }
