@@ -1,61 +1,26 @@
 package com.sernamar.jgit2;
 
-import com.sernamar.jgit2.bindings.git_oid;
-
-import java.lang.foreign.Arena;
-import java.lang.foreign.MemorySegment;
 import java.nio.file.Paths;
-
-import static com.sernamar.jgit2.bindings.git2_1.git_libgit2_init;
-import static com.sernamar.jgit2.bindings.git2_1.git_libgit2_shutdown;
-import static com.sernamar.jgit2.bindings.git2_2.*;
-import static com.sernamar.jgit2.utils.GitError.getGitErrorMessage;
 
 public class Scratch {
     public static void main(String[] args) {
         // Initialize libgit2
-        if (git_libgit2_init() < 0) {
-            throw new RuntimeException("Failed to initialize libgit2: " + getGitErrorMessage());
-        }
+        Global.gitLibgit2Init();
 
         String path = Paths.get("").toAbsolutePath().toString();
-        try (Arena arena = Arena.ofConfined()) {
-            // Open repository
-            MemorySegment repoSegment = arena.allocate(C_POINTER);
-            MemorySegment pathSegment = arena.allocateFrom(path);
-            int ret = git_repository_open(repoSegment, pathSegment);
-            if (ret < 0) {
-                throw new RuntimeException("Failed to open repository: " + getGitErrorMessage());
-            }
-            MemorySegment repoPtr = repoSegment.get(C_POINTER, 0);
-
-            // Get OID of main branch (refs/heads/main)
-            String refName = "refs/heads/main";
-            MemorySegment oidSegment = git_oid.allocate(arena);
-            MemorySegment refNameSegment = arena.allocateFrom(refName);
-            ret = git_reference_name_to_id(oidSegment, repoPtr, refNameSegment);
-            if (ret < 0) {
-                throw new RuntimeException("Failed to get the OID of main branch: " + getGitErrorMessage());
-            }
-
-            // Get commit
-            MemorySegment commitSegment = arena.allocate(C_POINTER);
-            ret = git_commit_lookup(commitSegment, repoPtr, oidSegment);
-            if (ret < 0) {
-                throw new RuntimeException("Failed to get the last commit: " + getGitErrorMessage());
-            }
-            MemorySegment commitPtr = commitSegment.get(C_POINTER, 0);
-
-            // Get commit message
-            MemorySegment messageSegment = git_commit_message(commitPtr);
-            String message = messageSegment.getString(0);
-            System.out.println(message);
-        }
+        // Open repository
+        GitRepository repo = Repository.gitRepositoryOpen(path);
+        // Get the reference id of the main branch (refs/heads/main)
+        String reference = "refs/heads/main";
+        GitOid referenceId = Refs.gitReferenceNameToId(repo, reference);
+        // Get last commit
+        GitCommit commit = Commit.gitCommitLookup(repo, referenceId);
+        // Get commit message and print it
+        String message = Commit.gitCommitMessage(commit);
+        System.out.println("Commit message:");
+        System.out.println(message);
 
         // Shutdown libgit2
-        if (git_libgit2_shutdown() < 0) {
-            throw new RuntimeException("Failed to shutdown libgit2: " + getGitErrorMessage());
-        }
+        Global.gitLibgit2Shutdown();
     }
 }
-
