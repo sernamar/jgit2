@@ -1,5 +1,93 @@
 * jgit2
 Java bindings for [[https://libgit2.org/][libgit2]]
+** Generating Java bindings with jextract
+Java bindings were generated using [[https://github.com/openjdk/jextract][jextract]] by running the following command from the project root:
+#+begin_src sh
+  export LIBGIT2_HOME=/tmp/libgit2-1.9.0
+  export JEXTRACT_HOME=/tmp/jextract-22
+
+  ${JEXTRACT_HOME}/bin/jextract \
+        --output src/main/java \
+        --target-package com.sernamar.jgit2.bindings \
+        --header-class-name git2 \
+        --library :${LIBGIT2_HOME}/build/libgit2.so \
+        --include-dir ${LIBGIT2_HOME}/include \
+        ${LIBGIT2_HOME}/include/git2.h
+#+end_src
+*** Warnings for missing bindings
+During extraction, =jextract= produces warnings about unsupported features:
+#+begin_src sh
+  time.h:49:8: warning: Skipping sigevent (type Declared(sigevent) is not supported)
+  floatn-common.h:285:21: warning: Skipping _Float64x (type LongDouble is not supported)
+  stdlib.h:127:20: warning: Skipping strtold (type LongDouble is not supported)
+  stdlib.h:911:14: warning: Skipping qecvt (type LongDouble is not supported)
+  stdlib.h:914:14: warning: Skipping qfcvt (type LongDouble is not supported)
+  stdlib.h:917:14: warning: Skipping qgcvt (type LongDouble is not supported)
+  stdlib.h:930:12: warning: Skipping qecvt_r (type LongDouble is not supported)
+  stdlib.h:934:12: warning: Skipping qfcvt_r (type LongDouble is not supported)
+  oid.h:318:16: warning: Skipping git_oid_shorten (type Declared(git_oid_shorten) is not supported)
+  types.h:88:16: warning: Skipping git_odb (type Declared(git_odb) is not supported)
+  types.h:91:16: warning: Skipping git_odb_backend (type Declared(git_odb_backend) is not supported)
+  types.h:96:16: warning: Skipping git_odb_object (type Declared(git_odb_object) is not supported)
+  types.h:105:16: warning: Skipping git_midx_writer (type Declared(git_midx_writer) is not supported)
+  types.h:108:16: warning: Skipping git_refdb (type Declared(git_refdb) is not supported)
+  types.h:111:16: warning: Skipping git_refdb_backend (type Declared(git_refdb_backend) is not supported)
+  types.h:114:16: warning: Skipping git_commit_graph (type Declared(git_commit_graph) is not supported)
+  types.h:117:16: warning: Skipping git_commit_graph_writer (type Declared(git_commit_graph_writer) is not supported)
+  types.h:123:16: warning: Skipping git_repository (type Declared(git_repository) is not supported)
+  types.h:126:16: warning: Skipping git_worktree (type Declared(git_worktree) is not supported)
+  types.h:129:16: warning: Skipping git_object (type Declared(git_object) is not supported)
+  types.h:132:16: warning: Skipping git_revwalk (type Declared(git_revwalk) is not supported)
+  types.h:135:16: warning: Skipping git_tag (type Declared(git_tag) is not supported)
+  types.h:138:16: warning: Skipping git_blob (type Declared(git_blob) is not supported)
+  types.h:141:16: warning: Skipping git_commit (type Declared(git_commit) is not supported)
+  types.h:144:16: warning: Skipping git_tree_entry (type Declared(git_tree_entry) is not supported)
+  types.h:147:16: warning: Skipping git_tree (type Declared(git_tree) is not supported)
+  types.h:150:16: warning: Skipping git_treebuilder (type Declared(git_treebuilder) is not supported)
+  types.h:153:16: warning: Skipping git_index (type Declared(git_index) is not supported)
+  types.h:156:16: warning: Skipping git_index_iterator (type Declared(git_index_iterator) is not supported)
+  types.h:159:16: warning: Skipping git_index_conflict_iterator (type Declared(git_index_conflict_iterator) is not supported)
+  types.h:162:16: warning: Skipping git_config (type Declared(git_config) is not supported)
+  types.h:165:16: warning: Skipping git_config_backend (type Declared(git_config_backend) is not supported)
+  types.h:168:16: warning: Skipping git_reflog_entry (type Declared(git_reflog_entry) is not supported)
+  types.h:171:16: warning: Skipping git_reflog (type Declared(git_reflog) is not supported)
+  types.h:174:16: warning: Skipping git_note (type Declared(git_note) is not supported)
+  types.h:177:16: warning: Skipping git_packbuilder (type Declared(git_packbuilder) is not supported)
+  types.h:194:16: warning: Skipping git_reference (type Declared(git_reference) is not supported)
+  types.h:197:16: warning: Skipping git_reference_iterator (type Declared(git_reference_iterator) is not supported)
+  types.h:200:16: warning: Skipping git_transaction (type Declared(git_transaction) is not supported)
+  types.h:214:16: warning: Skipping git_annotated_commit (type Declared(git_annotated_commit) is not supported)
+  types.h:217:16: warning: Skipping git_status_list (type Declared(git_status_list) is not supported)
+  types.h:220:16: warning: Skipping git_rebase (type Declared(git_rebase) is not supported)
+  types.h:251:16: warning: Skipping git_refspec (type Declared(git_refspec) is not supported)
+  types.h:257:16: warning: Skipping git_remote (type Declared(git_remote) is not supported)
+  types.h:263:16: warning: Skipping git_transport (type Declared(git_transport) is not supported)
+  types.h:269:16: warning: Skipping git_push (type Declared(git_push) is not supported)
+  types.h:283:16: warning: Skipping git_submodule (type Declared(git_submodule) is not supported)
+  types.h:382:16: warning: Skipping git_mailmap (type Declared(git_mailmap) is not supported)
+  indexer.h:27:16: warning: Skipping git_indexer (type Declared(git_indexer) is not supported)
+  commit.h:442:15: warning: Skipping allow_empty_commit (bitfields are not supported)
+  diff.h:196:16: warning: Skipping git_diff (type Declared(git_diff) is not supported)
+  diff.h:1369:16: warning: Skipping git_diff_stats (type Declared(git_diff_stats) is not supported)
+  blame.h:236:16: warning: Skipping git_blame (type Declared(git_blame) is not supported)
+  branch.h:97:16: warning: Skipping git_branch_iterator (type Declared(git_branch_iterator) is not supported)
+  credential.h:242:16: warning: Skipping _LIBSSH2_SESSION (type Declared(_LIBSSH2_SESSION) is not supported)
+  credential.h:242:33: warning: Skipping LIBSSH2_SESSION (type Declared(_LIBSSH2_SESSION) is not supported)
+  credential.h:243:16: warning: Skipping _LIBSSH2_USERAUTH_KBDINT_PROMPT (type Declared(_LIBSSH2_USERAUTH_KBDINT_PROMPT) is not supported)
+  credential.h:243:48: warning: Skipping LIBSSH2_USERAUTH_KBDINT_PROMPT (type Declared(_LIBSSH2_USERAUTH_KBDINT_PROMPT) is not supported)
+  credential.h:244:16: warning: Skipping _LIBSSH2_USERAUTH_KBDINT_RESPONSE (type Declared(_LIBSSH2_USERAUTH_KBDINT_RESPONSE) is not supported)
+  credential.h:244:50: warning: Skipping LIBSSH2_USERAUTH_KBDINT_RESPONSE (type Declared(_LIBSSH2_USERAUTH_KBDINT_RESPONSE) is not supported)
+  config.h:145:16: warning: Skipping git_config_iterator (type Declared(git_config_iterator) is not supported)
+  describe.h:146:16: warning: Skipping git_describe_result (type Declared(git_describe_result) is not supported)
+  filter.h:109:16: warning: Skipping git_filter (type Declared(git_filter) is not supported)
+  filter.h:121:16: warning: Skipping git_filter_list (type Declared(git_filter_list) is not supported)
+  notes.h:37:16: warning: Skipping git_iterator (type Declared(git_iterator) is not supported)
+  notes.h:37:29: warning: Skipping git_note_iterator (type Declared(git_iterator) is not supported)
+  patch.h:29:16: warning: Skipping git_patch (type Declared(git_patch) is not supported)
+  pathspec.h:27:16: warning: Skipping git_pathspec (type Declared(git_pathspec) is not supported)
+  pathspec.h:32:16: warning: Skipping git_pathspec_match_list (type Declared(git_pathspec_match_list) is not supported)
+#+end_src
+=jextract= does not support certain C features, which results in some bindings being skipped. To work around these issues, missing bindings must be implemented manually using Java's Foreign Function & Memory (FFM) API.
 ** License
 Copyright © 2025 Sergio Navarro
 
