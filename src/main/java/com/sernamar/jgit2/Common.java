@@ -20,18 +20,17 @@ public final class Common {
      * @return the version of the libgit2 library.
      */
     public static String gitLibgit2Version() {
-        try (Arena arena = Arena.ofConfined()) {
-            MemorySegment majorSegment = arena.allocate(C_INT);
-            MemorySegment minorSegment = arena.allocate(C_INT);
-            MemorySegment revSegment = arena.allocate(C_INT);
+        Arena arena = Arena.ofAuto();
+        MemorySegment majorSegment = arena.allocate(C_INT);
+        MemorySegment minorSegment = arena.allocate(C_INT);
+        MemorySegment revSegment = arena.allocate(C_INT);
 
-            int ret = git_libgit2_version(majorSegment, minorSegment, revSegment);
-            if (ret < 0) {
-                throw new RuntimeException("Failed to get libgit2 version: " + getGitErrorMessage());
-            }
-            return  majorSegment.get(C_INT,0) + "." +
-                    minorSegment.get(C_INT,0) + "." +
-                    revSegment.get(C_INT,0);
+        int ret = git_libgit2_version(majorSegment, minorSegment, revSegment);
+        if (ret < 0) {
+            throw new RuntimeException("Failed to get libgit2 version: " + getGitErrorMessage());
         }
+        return majorSegment.get(C_INT, 0) + "." +
+                minorSegment.get(C_INT, 0) + "." +
+                revSegment.get(C_INT, 0);
     }
 }
