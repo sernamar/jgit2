@@ -23,7 +23,7 @@ public class CommitMessage {
         var commit = Commit.gitCommitLookup(repo, referenceId);
 
         // Get commit message and print it
-        String message = Commit.gitCommitMessage(commit);
+        var message = Commit.gitCommitMessage(commit);
         System.out.println("Commit message:");
         System.out.println(message);
 

@@ -52,7 +52,7 @@ Java bindings were generated using [[https://github.com/openjdk/jextract][jextra
           var commit = Commit.gitCommitLookup(repo, referenceId);
 
           // Get and print the commit message
-          String message = Commit.gitCommitMessage(commit);
+          var message = Commit.gitCommitMessage(commit);
           System.out.println("Commit message:");
           System.out.println(message);
 
