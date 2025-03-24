@@ -11,10 +11,10 @@ public final class GitError {
     }
 
     public static String getGitErrorMessage() {
-        MemorySegment errorSegment = git_error_last();
-        if (errorSegment == MemorySegment.NULL) {
+        MemorySegment error = git_error_last();
+        if (error == MemorySegment.NULL) {
             return "Unknown error";
         }
-        return errorSegment.getString(0);
+        return error.getString(0);
     }
 }
