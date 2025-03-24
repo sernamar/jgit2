@@ -104,7 +104,7 @@ public final class Oid {
      * @param shortenerId the OID shortener.
      * @param textId      an OID in text form.
      * @return the minimal length to uniquely identify all OIDs
-     * added so far to the set.
+     *         added so far to the set.
      */
     public static int gitOidShortenAdd(GitOidShorten shortenerId, String textId) {
         Arena arena = Arena.ofAuto();
