@@ -88,6 +88,42 @@ During extraction, =jextract= produces warnings about unsupported features:
   pathspec.h:32:16: warning: Skipping git_pathspec_match_list (type Declared(git_pathspec_match_list) is not supported)
 #+end_src
 =jextract= does not support certain C features, which results in some bindings being skipped. To work around these issues, missing bindings must be implemented manually using Java's Foreign Function & Memory (FFM) API.
+** Examples
+*** Get commit message
+This example retrieves the last commit message from the main branch of the current repository:
+#+begin_src java
+  import com.sernamar.jgit2.*;
+
+  import java.nio.file.Paths;
+
+  public class CommitMessage {
+      public static void main(String[] args) {
+          // Initialize libgit2
+          Global.gitLibgit2Init();
+
+          // Get the current path
+          var path = Paths.get("").toAbsolutePath().toString();
+          
+          // Open repository
+          var repo = Repository.gitRepositoryOpen(path);
+
+          // Get the reference id of the main branch (refs/heads/main)
+          var reference = "refs/heads/main";
+          var referenceId = Refs.gitReferenceNameToId(repo, reference);
+
+          // Get last commit
+          var commit = Commit.gitCommitLookup(repo, referenceId);
+
+          // Get commit message and print it
+          String message = Commit.gitCommitMessage(commit);
+          System.out.println("Commit message:");
+          System.out.println(message);
+
+          // Shutdown libgit2
+          Global.gitLibgit2Shutdown();
+      }
+  }
+#+end_src
 ** License
 Copyright © 2025 Sergio Navarro
 
