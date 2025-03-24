@@ -87,7 +87,7 @@ During extraction, =jextract= produces warnings about unsupported features:
   pathspec.h:27:16: warning: Skipping git_pathspec (type Declared(git_pathspec) is not supported)
   pathspec.h:32:16: warning: Skipping git_pathspec_match_list (type Declared(git_pathspec_match_list) is not supported)
 #+end_src
-=jextract= does not support certain C features, which results in some bindings being skipped. To work around these issues, missing bindings must be implemented manually using Java's Foreign Function & Memory (FFM) API.
+=jextract= does not support certain C features, which causes some bindings to be skipped. However, many of these skipped bindings correspond to opaque data types and probably won’t require manual implementation.
 ** Examples
 *** Get commit message
 This example retrieves the last commit message from the main branch of the current repository:
