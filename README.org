@@ -1,5 +1,12 @@
-* jgit2
+** jgit2                                                           :noexport:
 Java bindings for [[https://libgit2.org/][libgit2]]
+** Table of contents                                                  :TOC_3:
+  - [[#generating-java-bindings-with-jextract][Generating Java bindings with jextract]]
+    - [[#warnings-for-missing-bindings][Warnings for missing bindings]]
+  - [[#examples][Examples]]
+    - [[#get-commit-message][Get commit message]]
+  - [[#license][License]]
+
 ** Generating Java bindings with jextract
 Java bindings were generated using [[https://github.com/openjdk/jextract][jextract]] by running the following command from the project root:
 #+begin_src sh
