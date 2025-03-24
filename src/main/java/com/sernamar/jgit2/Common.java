@@ -29,8 +29,11 @@ public final class Common {
         if (ret < 0) {
             throw new RuntimeException("Failed to get libgit2 version: " + getGitErrorMessage());
         }
-        return majorSegment.get(C_INT, 0) + "." +
-                minorSegment.get(C_INT, 0) + "." +
-                revSegment.get(C_INT, 0);
+	
+        int major = majorSegment.get(C_INT, 0);
+        int minor = minorSegment.get(C_INT, 0);
+        int rev = revSegment.get(C_INT, 0);
+	
+        return major + "." + minor + "." + rev;
     }
 }
