@@ -13,11 +13,11 @@ public final class GitError {
     }
 
     public static String getGitErrorMessage() {
-        MemorySegment error = git_error_last();
-        MemorySegment message = git_error.message(error);
-        if (message == MemorySegment.NULL) {
+        MemorySegment errorSegment = git_error_last();
+        MemorySegment messageSegment = git_error.message(errorSegment);
+        if (messageSegment == MemorySegment.NULL) {
             return "Unknown error";
         }
-        return message.getString(0);
+        return messageSegment.getString(0);
     }
 }
