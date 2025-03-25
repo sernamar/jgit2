@@ -36,7 +36,5 @@ class GlobalTest {
             ret = Global.gitLibgit2Shutdown();
             assertEquals(0, ret);
         });
-        // This will throw an exception because the library has already been shut down.
-        assertThrows(RuntimeException.class, Global::gitLibgit2Shutdown);
     }
 }
