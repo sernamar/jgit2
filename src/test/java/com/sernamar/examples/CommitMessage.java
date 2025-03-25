@@ -1,4 +1,4 @@
-package com.sernamar.jgit2.examples;
+package com.sernamar.examples;
 
 import com.sernamar.jgit2.*;
 import com.sernamar.jgit2.types.GitCommit;
