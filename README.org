@@ -66,9 +66,9 @@ Java bindings were generated using [[https://github.com/openjdk/jextract][jextra
               System.out.println("Commit message:");
               System.out.println(message);
           } finally {
-              if (commit != null) commit.close(); // or you could also use: `Commit.gitCommitFree(commit);`
-              // GitOid is immutable and does not need to be manually freed
-              if (repo != null) repo.close(); // or you could also use: `Repository.gitRepositoryFree(repo);`
+              if (commit != null) commit.close(); // Frees native memory (equivalent to `Commit.gitCommitFree(commit)`)
+              // `GitOid` is immutable and not allocated with a corresponding free function, so it does not need to be freed
+              if (repo != null) repo.close(); // Frees native memory (equivalent to `Repository.gitRepositoryFree(repo)`)
           }
 
           // Shutdown libgit2
