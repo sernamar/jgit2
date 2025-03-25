@@ -16,21 +16,18 @@ public class OidExample {
 
         // Create a new OID shortener
         long minLength = 7;
-        GitOidShorten shortener = Oid.gitOidShortenNew(minLength);
+        try (GitOidShorten shorten = Oid.gitOidShortenNew(minLength)) {
+            // Add OIDs to the shortener
+            int length1 = Oid.gitOidShortenAdd(shorten, oid1);
+            int length2 = Oid.gitOidShortenAdd(shorten, oid2);
+            int length3 = Oid.gitOidShortenAdd(shorten, oid3);
 
-        // Add OIDs to the shortener
-        int length1 = Oid.gitOidShortenAdd(shortener, oid1);
-        int length2 = Oid.gitOidShortenAdd(shortener, oid2);
-        int length3 = Oid.gitOidShortenAdd(shortener, oid3);
-
-        // Print the shortened OIDs
-        System.out.println("Shortened OIDs:");
-        System.out.println("OID 1: " + oid1.substring(0, length1));
-        System.out.println("OID 2: " + oid2.substring(0, length2));
-        System.out.println("OID 3: " + oid3.substring(0, length3));
-
-        // Free the OID shortener
-        Oid.gitOidShortenFree(shortener);
+            // Print the shortened OIDs
+            System.out.println("Shortened OIDs:");
+            System.out.println("OID 1: " + oid1.substring(0, length1));
+            System.out.println("OID 2: " + oid2.substring(0, length2));
+            System.out.println("OID 3: " + oid3.substring(0, length3));
+        }
 
         // Shutdown libgit2
         Global.gitLibgit2Shutdown();
