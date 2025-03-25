@@ -17,10 +17,10 @@ class OidTest {
     void oidShortenRoundTrip() {
         String oid = "fc2f1be150833453be26f10d2a26cd2f967b9297";
         long minLength = 7;
-        GitOidShorten shortener = Oid.gitOidShortenNew(minLength);
-        int length = Oid.gitOidShortenAdd(shortener, oid);
-        String shortened = oid.substring(0, length);
-        assertEquals("fc2f1be", shortened);
-        Oid.gitOidShortenFree(shortener);
+        try (GitOidShorten shorten = Oid.gitOidShortenNew(minLength)) {
+            int length = Oid.gitOidShortenAdd(shorten, oid);
+            String shortened = oid.substring(0, length);
+            assertEquals("fc2f1be", shortened);
+        }
     }
 }
