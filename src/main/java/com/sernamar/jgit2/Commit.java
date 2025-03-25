@@ -41,4 +41,8 @@ public final class Commit {
     public static String gitCommitMessage(GitCommit commit) {
         return git_commit_message(commit.segment()).getString(0);
     }
+
+    public static void gitCommitFree(GitCommit commit) {
+        git_commit_free(commit.segment());
+    }
 }

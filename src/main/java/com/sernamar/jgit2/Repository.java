@@ -3,8 +3,7 @@ package com.sernamar.jgit2;
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
 
-import static com.sernamar.jgit2.bindings.git2_2.C_POINTER;
-import static com.sernamar.jgit2.bindings.git2_2.git_repository_open;
+import static com.sernamar.jgit2.bindings.git2_2.*;
 import static com.sernamar.jgit2.utils.GitError.getGitErrorMessage;
 
 public final class Repository {
@@ -39,5 +38,20 @@ public final class Repository {
             throw new RuntimeException("Failed to open repository: " + getGitErrorMessage());
         }
         return new GitRepository(repoSegment.get(C_POINTER, 0));
+    }
+
+    /**
+     * Free a previously allocated repository
+     * <p>
+     * Note that after a repository is freed, all the objects it has spawned
+     * will still exist until they are manually closed by the user
+     * with `git_object_free`, but accessing any of the attributes of
+     * an object without a backing repository will result in undefined
+     * behavior
+     *
+     * @param repo repository handle to close. If NULL nothing occurs.
+     */
+    public static void gitRepositoryFree(GitRepository repo) {
+        git_repository_free(repo.segment());
     }
 }
