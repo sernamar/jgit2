@@ -11,12 +11,14 @@ class GlobalTest {
         assertDoesNotThrow(() -> {
             int ret = Global.gitLibgit2Init();
             assertTrue(ret > 0);
+            Global.gitLibgit2Shutdown();
         });
     }
 
     @Test
     void gitLibgit2Shutdown() {
         assertDoesNotThrow(() -> {
+            Global.gitLibgit2Init();
             int ret = Global.gitLibgit2Shutdown();
             assertTrue(ret >= 0);
         });
