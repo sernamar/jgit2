@@ -29,13 +29,13 @@ public final class Oid {
      */
     public static GitOid gitOidFromString(String string) {
         Arena arena = Arena.ofAuto();
-        MemorySegment oidSegment = git_oid.allocate(arena);
+        MemorySegment idSegment = git_oid.allocate(arena);
         MemorySegment stringSegment = arena.allocateFrom(string);
-        int ret = git_oid_fromstr(oidSegment, stringSegment);
+        int ret = git_oid_fromstr(idSegment, stringSegment);
         if (ret < 0) {
             throw new RuntimeException("Failed to convert string to OID: " + getGitErrorMessage());
         }
-        return new GitOid(oidSegment);
+        return new GitOid(idSegment);
     }
 
     /**
@@ -45,14 +45,14 @@ public final class Oid {
      * NULL), then a pointer to an empty string is returned, so that the
      * return value can always be printed.
      *
-     * @param oid    the oid structure to format.
+     * @param id    the oid structure to format.
      * @param length the size of the out buffer.
      * @return the formatted string.
      */
-    public static String gitOidToString(GitOid oid, long length) {
+    public static String gitOidToString(GitOid id, long length) {
         Arena arena = Arena.ofAuto();
         MemorySegment stringSegment = arena.allocateFrom("");
-        MemorySegment ret = git_oid_tostr(stringSegment, length + 1, oid.segment());
+        MemorySegment ret = git_oid_tostr(stringSegment, length + 1, id.segment());
         return ret.getString(0);
     }
 
