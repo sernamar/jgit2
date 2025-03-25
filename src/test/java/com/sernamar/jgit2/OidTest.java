@@ -1,6 +1,5 @@
 package com.sernamar.jgit2;
 
-import com.sernamar.jgit2.types.GitOidShorten;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 

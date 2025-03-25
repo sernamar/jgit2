@@ -1,9 +1,9 @@
 package com.sernamar.examples;
 
 import com.sernamar.jgit2.*;
-import com.sernamar.jgit2.types.GitCommit;
-import com.sernamar.jgit2.types.GitOid;
-import com.sernamar.jgit2.types.GitRepository;
+import com.sernamar.jgit2.GitCommit;
+import com.sernamar.jgit2.GitOid;
+import com.sernamar.jgit2.GitRepository;
 
 import java.nio.file.Paths;
 
@@ -17,7 +17,6 @@ public class CommitMessage {
 
         // Open repository
         GitRepository repo = Repository.gitRepositoryOpen(path);
-        System.out.println("Check if I can access segment() method: " + repo.segment());
 
         // Get the reference id of the main branch (refs/heads/main)
         String reference = "refs/heads/main";

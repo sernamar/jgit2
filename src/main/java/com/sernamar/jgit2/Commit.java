@@ -1,9 +1,5 @@
 package com.sernamar.jgit2;
 
-import com.sernamar.jgit2.types.GitCommit;
-import com.sernamar.jgit2.types.GitOid;
-import com.sernamar.jgit2.types.GitRepository;
-
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
 

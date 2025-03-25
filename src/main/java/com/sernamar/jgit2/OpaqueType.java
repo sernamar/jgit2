@@ -1,4 +1,4 @@
-package com.sernamar.jgit2.types;
+package com.sernamar.jgit2;
 
 import java.lang.foreign.MemorySegment;
 
@@ -9,7 +9,7 @@ abstract class OpaqueType {
         this.segment = segment;
     }
 
-    public MemorySegment segment() {
+    MemorySegment segment() {
         return segment;
     }
 }

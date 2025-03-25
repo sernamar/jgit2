@@ -1,6 +1,6 @@
 package com.sernamar.examples;
 
-import com.sernamar.jgit2.types.GitOidShorten;
+import com.sernamar.jgit2.GitOidShorten;
 import com.sernamar.jgit2.Global;
 import com.sernamar.jgit2.Oid;
 

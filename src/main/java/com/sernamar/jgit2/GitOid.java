@@ -1,4 +1,4 @@
-package com.sernamar.jgit2.types;
+package com.sernamar.jgit2;
 
 import java.lang.foreign.MemorySegment;
 

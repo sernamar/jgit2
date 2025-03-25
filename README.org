@@ -30,9 +30,9 @@ Java bindings were generated using [[https://github.com/openjdk/jextract][jextra
 *** Get commit message
 #+begin_src java
   import com.sernamar.jgit2.*;
-  import com.sernamar.jgit2.types.GitCommit;
-  import com.sernamar.jgit2.types.GitOid;
-  import com.sernamar.jgit2.types.GitRepository;
+  import com.sernamar.jgit2.GitCommit;
+  import com.sernamar.jgit2.GitOid;
+  import com.sernamar.jgit2.GitRepository;
 
   import java.nio.file.Paths;
 
@@ -66,7 +66,7 @@ Java bindings were generated using [[https://github.com/openjdk/jextract][jextra
 #+end_src
 *** Shorten OIDs
 #+begin_src java
-  import com.sernamar.jgit2.types.GitOidShorten;
+  import com.sernamar.jgit2.GitOidShorten;
   import com.sernamar.jgit2.Global;
   import com.sernamar.jgit2.Oid;
 
