@@ -1,15 +1,15 @@
-package com.sernamar.jgit2;
+package com.sernamar.jgit2.types;
 
 import java.lang.foreign.MemorySegment;
 
-public final class GitRepository {
+abstract class OpaqueType {
     private final MemorySegment segment;
 
-    public GitRepository(MemorySegment segment) {
+    protected OpaqueType(MemorySegment segment) {
         this.segment = segment;
     }
 
-    MemorySegment segment() {
+    public MemorySegment segment() {
         return segment;
     }
 }

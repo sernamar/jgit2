@@ -1,6 +1,9 @@
 package com.sernamar.jgit2.examples;
 
 import com.sernamar.jgit2.*;
+import com.sernamar.jgit2.types.GitCommit;
+import com.sernamar.jgit2.types.GitOid;
+import com.sernamar.jgit2.types.GitRepository;
 
 import java.nio.file.Paths;
 
