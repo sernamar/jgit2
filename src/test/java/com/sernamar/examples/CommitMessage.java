@@ -17,6 +17,7 @@ public class CommitMessage {
 
         // Open repository
         GitRepository repo = Repository.gitRepositoryOpen(path);
+        System.out.println("Check if I can access segment() method: " + repo.segment());
 
         // Get the reference id of the main branch (refs/heads/main)
         String reference = "refs/heads/main";
