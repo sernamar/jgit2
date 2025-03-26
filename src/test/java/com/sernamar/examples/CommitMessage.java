@@ -19,8 +19,9 @@ public class CommitMessage {
         try (GitRepository repo = Repository.gitRepositoryOpen(path)) {
 
             // Get the reference id of "HEAD"
-            String reference = "HEAD";
-            GitOid referenceId = Refs.gitReferenceNameToId(repo, reference);
+            // Note that `GitOid` represents a fixed-size value and does not allocate resources that need to be
+            // explicitly released, so it does not require try-with-resources.
+            GitOid referenceId = Refs.gitReferenceNameToId(repo, "HEAD");
 
             // Get last commit
             try (GitCommit commit = Commit.gitCommitLookup(repo, referenceId)){
