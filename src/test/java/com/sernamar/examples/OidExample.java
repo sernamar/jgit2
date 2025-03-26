@@ -4,6 +4,8 @@ import com.sernamar.jgit2.GitOidShorten;
 import com.sernamar.jgit2.Global;
 import com.sernamar.jgit2.Oid;
 
+import static com.sernamar.jgit2.Oid.gitOidShortenNew;
+
 public class OidExample {
     public static void main(String[] args) {
         // Initialize libgit2
@@ -16,7 +18,7 @@ public class OidExample {
 
         // Create a new OID shortener
         long minLength = 7;
-        try (GitOidShorten shorten = Oid.gitOidShortenNew(minLength)) {
+        try (GitOidShorten shorten = gitOidShortenNew(minLength)) {
             // Add OIDs to the shortener
             int length1 = Oid.gitOidShortenAdd(shorten, oid1);
             int length2 = Oid.gitOidShortenAdd(shorten, oid2);

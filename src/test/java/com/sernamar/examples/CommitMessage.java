@@ -1,39 +1,45 @@
 package com.sernamar.examples;
 
-import com.sernamar.jgit2.*;
 import com.sernamar.jgit2.GitCommit;
 import com.sernamar.jgit2.GitOid;
 import com.sernamar.jgit2.GitRepository;
 
 import java.nio.file.Paths;
 
+import static com.sernamar.jgit2.Commit.gitCommitLookup;
+import static com.sernamar.jgit2.Commit.gitCommitMessage;
+import static com.sernamar.jgit2.Global.gitLibgit2Init;
+import static com.sernamar.jgit2.Global.gitLibgit2Shutdown;
+import static com.sernamar.jgit2.Refs.gitReferenceNameToId;
+import static com.sernamar.jgit2.Repository.gitRepositoryOpen;
+
 public class CommitMessage {
     public static void main(String[] args) {
         // Initialize libgit2
-        Global.gitLibgit2Init();
+        gitLibgit2Init();
 
         // Get the current path
         String path = Paths.get("").toAbsolutePath().toString();
 
         // Open repository
-        try (GitRepository repo = Repository.gitRepositoryOpen(path)) {
+        try (GitRepository repo = gitRepositoryOpen(path)) {
 
             // Get the reference id of "HEAD"
             // Note that `GitOid` represents a fixed-size value and does not allocate resources that need to be
             // explicitly released, so it does not require try-with-resources.
-            GitOid referenceId = Refs.gitReferenceNameToId(repo, "HEAD");
+            GitOid referenceId = gitReferenceNameToId(repo, "HEAD");
 
             // Get last commit
-            try (GitCommit commit = Commit.gitCommitLookup(repo, referenceId)){
+            try (GitCommit commit = gitCommitLookup(repo, referenceId)){
 
                 // Get commit message and print it
-                String message = Commit.gitCommitMessage(commit);
+                String message = gitCommitMessage(commit);
                 System.out.println("Commit message:");
                 System.out.println(message);
             }
         }
 
         // Shutdown libgit2
-        Global.gitLibgit2Shutdown();
+        gitLibgit2Shutdown();
     }
 }
