@@ -18,8 +18,8 @@ public class CommitMessage {
         // Open repository
         try (GitRepository repo = Repository.gitRepositoryOpen(path)) {
 
-            // Get the reference id of the main branch (refs/heads/main)
-            String reference = "refs/heads/main";
+            // Get the reference id of "HEAD"
+            String reference = "HEAD";
             GitOid referenceId = Refs.gitReferenceNameToId(repo, reference);
 
             // Get last commit
