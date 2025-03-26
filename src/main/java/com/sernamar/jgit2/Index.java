@@ -1,10 +1,11 @@
 package com.sernamar.jgit2;
 
+import com.sernamar.jgit2.bindings.git_oid;
+
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
 
-import static com.sernamar.jgit2.bindings.git2_1.git_index_add_bypath;
-import static com.sernamar.jgit2.bindings.git2_1.git_index_write;
+import static com.sernamar.jgit2.bindings.git2_1.*;
 import static com.sernamar.jgit2.utils.GitError.getGitErrorMessage;
 
 public final class Index {
@@ -52,5 +53,32 @@ public final class Index {
         if (ret < 0) {
             throw new RuntimeException("Failed to write index: " + getGitErrorMessage());
         }
+    }
+
+    /**
+     * Write the index as a tree
+     * <p>
+     * This method will scan the index and write a representation
+     * of its current state back to disk; it recursively creates
+     * tree objects for each of the subtrees stored in the index,
+     * but only returns the OID of the root tree. This is the OID
+     * that can be used e.g. to create a commit.
+     * <p>
+     * The index instance cannot be bare, and needs to be associated
+     * to an existing repository.
+     * <p>
+     * The index must not contain any file in conflict.
+     *
+     * @param index index to write.
+     * @return the OID where to store the written tree.
+     */
+    public static GitOid gitIndexWriteTree(GitIndex index) {
+        Arena arena = Arena.ofAuto();
+        MemorySegment id = git_oid.allocate(arena);
+        int ret = git_index_write_tree(id, index.segment());
+        if (ret < 0) {
+            throw new RuntimeException("Failed to write index tree: " + getGitErrorMessage());
+        }
+        return new GitOid(id);
     }
 }
