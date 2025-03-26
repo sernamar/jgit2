@@ -13,7 +13,7 @@ import static com.sernamar.jgit2.Global.gitLibgit2Shutdown;
 import static com.sernamar.jgit2.Refs.gitReferenceNameToId;
 import static com.sernamar.jgit2.Repository.gitRepositoryOpen;
 
-public class CommitMessage {
+public class GetLastCommitMessage {
     public static void main(String[] args) {
         // Initialize libgit2
         gitLibgit2Init();
