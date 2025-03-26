@@ -62,4 +62,12 @@ class RepositoryTest {
         GitRepository repo = Repository.gitRepositoryInit(path);
         Repository.gitRepositoryFree(repo);
     }
+
+    @Test
+    void gitRepositoryIndex() {
+        try (GitRepository repo = Repository.gitRepositoryInit(path);
+             GitIndex index = Repository.gitRepositoryIndex(repo)) {
+            assertNotNull(index);
+        }
+    }
 }

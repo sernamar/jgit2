@@ -19,7 +19,7 @@ public final class Repository {
      * `git_libgit2_init` before any APIs can be called, including
      * this one.
      *
-     * @param path   the path to the repository
+     * @param path the path to the repository
      * @return the repository.
      */
     public static GitRepository gitRepositoryInit(String path) {
@@ -101,5 +101,29 @@ public final class Repository {
      */
     public static void gitRepositoryFree(GitRepository repo) {
         git_repository_free(repo.segment());
+    }
+
+    /**
+     * Get the Index file for this repository.
+     * <p>
+     * If a custom index has not been set, the default
+     * index for the repository will be returned (the one
+     * located in `.git/index`).
+     * <p>
+     * The index must be freed once it's no longer being used by
+     * the user.
+     *
+     * @param repo the repository.
+     * @return the index.
+     */
+    public static GitIndex gitRepositoryIndex(GitRepository repo) {
+        Arena arena = Arena.ofAuto();
+        MemorySegment indexSegment = arena.allocate(C_POINTER);
+
+        int ret = git_repository_index(indexSegment, repo.segment());
+        if (ret < 0) {
+            throw new RuntimeException("Failed to get repository index: " + getGitErrorMessage());
+        }
+        return new GitIndex(indexSegment.get(C_POINTER, 0));
     }
 }
