@@ -1,15 +1,16 @@
 package com.sernamar.examples;
 
 import com.sernamar.jgit2.GitOidShorten;
-import com.sernamar.jgit2.Global;
 import com.sernamar.jgit2.Oid;
 
+import static com.sernamar.jgit2.Global.gitLibgit2Init;
+import static com.sernamar.jgit2.Global.gitLibgit2Shutdown;
 import static com.sernamar.jgit2.Oid.gitOidShortenNew;
 
 public class OidExample {
     public static void main(String[] args) {
         // Initialize libgit2
-        Global.gitLibgit2Init();
+        gitLibgit2Init();
 
         // OIDs to shorten
         String oid1 = "fc2f1be150833453be26f10d2a26cd2f967b9297";
@@ -32,6 +33,6 @@ public class OidExample {
         }
 
         // Shutdown libgit2
-        Global.gitLibgit2Shutdown();
+        gitLibgit2Shutdown();
     }
 }
