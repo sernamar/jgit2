@@ -30,13 +30,13 @@ public final class Refs {
      */
     public static GitOid gitReferenceNameToId(GitRepository repo, String name) {
         Arena arena = Arena.ofAuto();
-        MemorySegment oidSegment = git_oid.allocate(arena);
+        MemorySegment idSegment = git_oid.allocate(arena);
         MemorySegment refNameSegment = arena.allocateFrom(name);
 
-        int ret = git_reference_name_to_id(oidSegment, repo.segment(), refNameSegment);
+        int ret = git_reference_name_to_id(idSegment, repo.segment(), refNameSegment);
         if (ret < 0) {
             throw new RuntimeException("Failed to get the OID of the reference: " + getGitErrorMessage());
         }
-        return new GitOid(oidSegment);
+        return new GitOid(idSegment);
     }
 }
