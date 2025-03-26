@@ -13,6 +13,54 @@ public final class Repository {
     }
 
     /**
+     * Creates a new bare Git repository in the given folder.
+     * <p>
+     * Note that the libgit2 library _must_ be initialized using
+     * `git_libgit2_init` before any APIs can be called, including
+     * this one.
+     *
+     * @param path   the path to the repository
+     * @return the repository.
+     */
+    public static GitRepository gitRepositoryInit(String path) {
+        Arena arena = Arena.ofAuto();
+        MemorySegment repoSegment = arena.allocate(C_POINTER);
+        MemorySegment pathSegment = arena.allocateFrom(path);
+
+        int ret = git_repository_init(repoSegment, pathSegment, 0);
+        if (ret < 0) {
+            throw new RuntimeException("Failed to initialize repository: " + getGitErrorMessage());
+        }
+        return new GitRepository(repoSegment.get(C_POINTER, 0));
+    }
+
+    /**
+     * Creates a new Git repository in the given folder.
+     * <p>
+     * Note that the libgit2 library _must_ be initialized using
+     * `git_libgit2_init` before any APIs can be called, including
+     * this one.
+     *
+     * @param path   the path to the repository
+     * @param isBare if true, a Git repository without a working directory is
+     *               created at the pointed path. If false, provided path will be
+     *               considered as the working directory into which the .git directory
+     *               will be created.
+     * @return the repository.
+     */
+    public static GitRepository gitRepositoryInit(String path, boolean isBare) {
+        Arena arena = Arena.ofAuto();
+        MemorySegment repoSegment = arena.allocate(C_POINTER);
+        MemorySegment pathSegment = arena.allocateFrom(path);
+
+        int ret = git_repository_init(repoSegment, pathSegment, isBare ? 1 : 0);
+        if (ret < 0) {
+            throw new RuntimeException("Failed to initialize repository: " + getGitErrorMessage());
+        }
+        return new GitRepository(repoSegment.get(C_POINTER, 0));
+    }
+
+    /**
      * Open a git repository.
      * <p>
      * The `path` argument must point to either a git repository
