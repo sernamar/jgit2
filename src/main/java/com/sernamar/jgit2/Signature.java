@@ -9,8 +9,8 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
-import static com.sernamar.jgit2.bindings.git2_1.git_signature_free;
 import static com.sernamar.jgit2.bindings.git2_1.git_signature_now;
+import static com.sernamar.jgit2.bindings.git2_2.C_POINTER;
 import static com.sernamar.jgit2.utils.GitError.getGitErrorMessage;
 
 public final class Signature {
@@ -31,13 +31,14 @@ public final class Signature {
      */
     public static GitSignature gitSignatureNow(String name, String email) {
         Arena arena = Arena.ofAuto();
-        MemorySegment signatureSegment = git_signature.allocate(arena);
+        MemorySegment signaturePtr = arena.allocate(C_POINTER);
         MemorySegment nameSegment = arena.allocateFrom(name);
         MemorySegment emailSegment = arena.allocateFrom(email);
-        int ret = git_signature_now(signatureSegment, nameSegment, emailSegment);
+        int ret = git_signature_now(signaturePtr, nameSegment, emailSegment);
         if (ret < 0) {
             throw new RuntimeException("Failed to create signature: " + getGitErrorMessage());
         }
+        MemorySegment signatureSegment = signaturePtr.get(C_POINTER,0);
         return new GitSignature(signatureSegment);
     }
 
