@@ -4,8 +4,7 @@ Java Foreign Function & Memory bindings for [[https://libgit2.org/][libgit2]].
   - [[#requirements][Requirements]]
   - [[#java-bindings][Java bindings]]
   - [[#usage-examples][Usage examples]]
-    - [[#initialize-a-repo-and-create-two-commits][Initialize a repo and create two commits]]
-    - [[#shorten-oids][Shorten OIDs]]
+    - [[#initialize-a-repo-and-create-commits][Initialize a repo and create commits]]
   - [[#license][License]]
 
 ** Requirements
@@ -27,7 +26,7 @@ Java bindings were generated using [[https://github.com/openjdk/jextract][jextra
         ${LIBGIT2_HOME}/include/git2.h
 #+end_src
 ** Usage examples
-*** Initialize a repo and create two commits
+*** Initialize a repo and create commits
 #+begin_src java
   package com.sernamar.examples;
 
@@ -35,7 +34,6 @@ Java bindings were generated using [[https://github.com/openjdk/jextract][jextra
 
   import java.io.IOException;
   import java.nio.file.Files;
-  import java.nio.file.Path;
   import java.nio.file.Paths;
 
   import static com.sernamar.jgit2.Commit.gitCommitCreateV;
@@ -51,142 +49,50 @@ Java bindings were generated using [[https://github.com/openjdk/jextract][jextra
   import static com.sernamar.jgit2.Tree.gitTreeLookup;
 
   public class CreateCommits {
-      private static final String path = "/tmp/repo";
-      private static final String name = "sernamar";
-      private static final String email = "sernamar@protonmail.com";
+      private static final String PATH = "/tmp/repo";
+      private static final String NAME = "sernamar";
+      private static final String EMAIL = "sernamar@protonmail.com";
 
-      private static void createInitialCommit(GitRepository repo) {
-          try (GitSignature signature = gitSignatureNow(name, email); // Create signature
-               GitIndex index = gitRepositoryIndex(repo)) { // Get the index of the repository
-              GitOid treeId = gitIndexWriteTree(index); // Write the index contents to the ODB as a tree
-              try (GitTree tree = gitTreeLookup(repo, treeId)) { // Lookup the tree object from the repository
-                  // Create the initial commit
-                  String message = gitMessagePrettify("Initial commit");
-                  GitOid commitId = gitCommitCreateV(
-                          repo,
-                          "HEAD",
-                          signature,
-                          signature,
-                          null,
-                          message,
-                          tree
-                  );
-                  // Print the commit ID
-                  System.out.println("Commit ID: " + commitId);
-              }
+      private static void createCommit(GitRepository repo, GitTree tree, GitCommit parentCommit, String message) {
+          try (GitSignature signature = gitSignatureNow(NAME, EMAIL)) {
+              GitOid commitId = (parentCommit == null)
+                  ? gitCommitCreateV(repo, "HEAD", signature, signature, null, gitMessagePrettify(message), tree)
+                  : gitCommitCreateV(repo, "HEAD", signature, signature, null, gitMessagePrettify(message), tree, parentCommit);
+              System.out.println("Commit ID: " + commitId);
           }
       }
 
-      private static void createCommit(GitRepository repo) {
-          try (GitSignature signature = gitSignatureNow(name, email); // Create signature
-               GitIndex index = gitRepositoryIndex(repo)) { // Get the index of the repository
+      public static void main(String[] args) {
+          gitLibgit2Init();
+          try (GitRepository repo = gitRepositoryInit(PATH);
+               GitIndex index = gitRepositoryIndex(repo)) {
+              // Create initial commit
+              GitOid treeId = gitIndexWriteTree(index);
+              try (GitTree tree = gitTreeLookup(repo, treeId)) {
+                  createCommit(repo, tree, null, "Initial commit");
+              }
 
-              // Create a new file in the repository
+              // Create hello.txt file and add it to the index
               String filename = "hello.txt";
-              String content = "Hello, world!";
-              createFile(filename, content);
-
-              // Add the file to the index
+              String content = "Hello, World!";
+              try {
+                  Files.write(Paths.get(PATH, filename), content.getBytes());
+              } catch (IOException e) {
+                  throw new RuntimeException(e);
+              }
               gitIndexAddByPath(index, filename);
-
-              // Write the in-memory index to disk
               gitIndexWrite(index);
 
-              // Write the index contents to the ODB as a tree
-              GitOid treeId = gitIndexWriteTree(index);
-
-              // Lookup the tree object from the repository
+              // Create another commit
+              treeId = gitIndexWriteTree(index);
               try (GitTree tree = gitTreeLookup(repo, treeId)) {
-                  // Lookup the HEAD reference and resolve to OID
                   GitOid referenceId = gitReferenceNameToId(repo, "HEAD");
-
-                  // if referenceId is null, create a new commit with no parent
-                  if (referenceId == null) {
-                      createInitialCommit(repo);
-                  } else {
-                      // Lookup the parent commit from the repository
-                      try (GitCommit parentCommit = gitCommitLookup(repo, referenceId)) {
-                          // Create the commit
-                          String message = gitMessagePrettify("Add hello.txt");
-                          GitOid commitId = gitCommitCreateV(
-                                  repo,
-                                  "HEAD",
-                                  signature,
-                                  signature,
-                                  null,
-                                  message,
-                                  tree,
-                                  parentCommit
-                          );
-                          // Print the commit ID
-                          System.out.println("Commit ID: " + commitId);
-                      }
+                  assert referenceId != null;
+                  try (GitCommit parentCommit = gitCommitLookup(repo, referenceId)) {
+                      createCommit(repo, tree, parentCommit, "Add hello.txt");
                   }
               }
           }
-      }
-
-      private static void createFile(String filename, String content) {
-          try {
-              Path file = Paths.get(path, filename);
-              Files.write(file, content.getBytes());
-          } catch (IOException e) {
-              throw new RuntimeException(e);
-          }
-      }
-
-      public static void main(String[] args) {
-          // Initialize libgit2
-          gitLibgit2Init();
-
-          try (GitRepository repo = gitRepositoryInit(path)) {
-              createInitialCommit(repo);
-              createCommit(repo);
-          }
-
-          // Shutdown libgit2
-          gitLibgit2Shutdown();
-      }
-  }
-#+end_src
-*** Shorten OIDs
-#+begin_src java
-  package com.sernamar.examples;
-
-  import com.sernamar.jgit2.GitOidShorten;
-  import com.sernamar.jgit2.Oid;
-
-  import static com.sernamar.jgit2.Global.gitLibgit2Init;
-  import static com.sernamar.jgit2.Global.gitLibgit2Shutdown;
-  import static com.sernamar.jgit2.Oid.gitOidShortenAdd;
-  import static com.sernamar.jgit2.Oid.gitOidShortenNew;
-
-  public class OidExample {
-      public static void main(String[] args) {
-          // Initialize libgit2
-          gitLibgit2Init();
-
-          // OIDs to shorten
-          String oid1 = "fc2f1be150833453be26f10d2a26cd2f967b9297";
-          String oid2 = "e81e21fdc32c92e9a038a8b81d0ca22168b48c61";
-          String oid3 = "0b5f2d2d328ef51052fa33b67985dd3c9cc602df";
-
-          // Create a new OID shortener
-          long minLength = 7;
-          try (GitOidShorten shorten = gitOidShortenNew(minLength)) {
-              // Add OIDs to the shortener
-              int length1 = gitOidShortenAdd(shorten, oid1);
-              int length2 = gitOidShortenAdd(shorten, oid2);
-              int length3 = gitOidShortenAdd(shorten, oid3);
-
-              // Print the shortened OIDs
-              System.out.println("Shortened OIDs:");
-              System.out.println("OID 1: " + oid1.substring(0, length1));
-              System.out.println("OID 2: " + oid2.substring(0, length2));
-              System.out.println("OID 3: " + oid3.substring(0, length3));
-          }
-
-          // Shutdown libgit2
           gitLibgit2Shutdown();
       }
   }
