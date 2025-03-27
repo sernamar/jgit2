@@ -76,7 +76,9 @@ public final class Index {
         Arena arena = Arena.ofAuto();
         MemorySegment id = git_oid.allocate(arena);
         int ret = git_index_write_tree(id, index.segment());
-        if (ret < 0) {
+        if (ret == GIT_EUNMERGED()) {
+            throw new RuntimeException("Cannot write tree with unmerged entries: " + getGitErrorMessage());
+        } else if (ret < 0) {
             throw new RuntimeException("Failed to write index tree: " + getGitErrorMessage());
         }
         return new GitOid(id);
