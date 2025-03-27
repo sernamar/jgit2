@@ -141,4 +141,24 @@ public final class Commit {
         }
         return new GitOid(idSegment);
     }
+
+    /**
+     * Get the committer of a commit.
+     *
+     * @param commit a previously loaded commit.
+     * @return the committer of a commit
+     */
+    public static GitSignature gitCommitCommitter(GitCommit commit) {
+        return new GitSignature(git_commit_committer(commit.segment()));
+    }
+
+    /**
+     * Get the author of a commit.
+     *
+     * @param commit a previously loaded commit.
+     * @return the author of a commit
+     */
+    public static GitSignature gitCommitAuthor(GitCommit commit) {
+        return new GitSignature(git_commit_author(commit.segment()));
+    }
 }
