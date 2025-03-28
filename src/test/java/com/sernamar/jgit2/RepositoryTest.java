@@ -54,12 +54,6 @@ class RepositoryTest {
     }
 
     @Test
-    void gitRepositoryFree() {
-        GitRepository repo = Repository.gitRepositoryInit(PATH);
-        Repository.gitRepositoryFree(repo);
-    }
-
-    @Test
     void gitRepositoryIndex() {
         try (GitRepository repo = Repository.gitRepositoryInit(PATH);
              GitIndex index = Repository.gitRepositoryIndex(repo)) {

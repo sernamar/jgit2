@@ -81,21 +81,6 @@ public final class Repository {
     }
 
     /**
-     * Free a previously allocated repository
-     * <p>
-     * Note that after a repository is freed, all the objects it has spawned
-     * will still exist until they are manually closed by the user
-     * with `git_object_free`, but accessing any of the attributes of
-     * an object without a backing repository will result in undefined
-     * behavior
-     *
-     * @param repo repository handle to close. If NULL nothing occurs.
-     */
-    public static void gitRepositoryFree(GitRepository repo) {
-        git_repository_free(repo.segment());
-    }
-
-    /**
      * Get the Index file for this repository.
      * <p>
      * If a custom index has not been set, the default

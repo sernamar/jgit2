@@ -47,21 +47,6 @@ public final class Commit {
     }
 
     /**
-     * Close an open commit
-     * <p>
-     * This is a wrapper around git_object_free()
-     * <p>
-     * IMPORTANT:
-     * It *is* necessary to call this method when you stop
-     * using a commit. Failure to do so will cause a memory leak.
-     *
-     * @param commit the commit to close
-     */
-    public static void gitCommitFree(GitCommit commit) {
-        git_commit_free(commit.segment());
-    }
-
-    /**
      * Create new commit in the repository using a variable argument list.
      * <p>
      * The message will **not** be cleaned up automatically. You can do that
