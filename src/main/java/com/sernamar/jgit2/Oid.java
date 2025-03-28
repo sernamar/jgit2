@@ -75,15 +75,6 @@ public final class Oid {
     }
 
     /**
-     * Free an OID shortener.
-     *
-     * @param shortenerId the OID shortener.
-     */
-    public static void gitOidShortenFree(GitOidShorten shortenerId) {
-        git_oid_shorten_free(shortenerId.segment());
-    }
-
-    /**
      * Add a new OID to set of shortened OIDs and calculate
      * the minimal length to uniquely identify all the OIDs in
      * the set.
