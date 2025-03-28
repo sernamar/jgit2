@@ -5,14 +5,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Comparator;
-import java.util.stream.Stream;
 
+import static com.sernamar.jgit2.TestUtils.deleteRepoDirectory;
 import static org.junit.jupiter.api.Assertions.*;
 
 class RepositoryTest {
@@ -30,12 +24,8 @@ class RepositoryTest {
     }
 
     @AfterEach
-    void afterEach() throws IOException {
-        try (Stream<Path> paths = Files.walk(Paths.get(PATH))) {
-            paths.sorted(Comparator.reverseOrder())
-                    .map(Path::toFile)
-                    .forEach(File::delete);
-        }
+    void afterEach() {
+        deleteRepoDirectory(PATH);
     }
 
     @Test
