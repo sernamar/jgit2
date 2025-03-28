@@ -39,7 +39,7 @@ public final class Signature {
             throw new RuntimeException("Failed to create signature: " + getGitErrorMessage());
         }
         MemorySegment signatureSegment = signaturePtr.get(C_POINTER,0);
-        return new GitSignature(signatureSegment);
+        return new GitSignature(signatureSegment, true);
     }
 
     /**

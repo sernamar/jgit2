@@ -99,8 +99,8 @@ class CommitTest {
         try (GitRepository repo = Repository.gitRepositoryOpen(PATH)) {
             GitOid referenceId = Refs.gitReferenceNameToId(repo, "HEAD");
             assert referenceId != null;
-            try (GitCommit commit = Commit.gitCommitLookup(repo, referenceId)) {
-                GitSignature committer = Commit.gitCommitCommitter(commit);
+            try (GitCommit commit = Commit.gitCommitLookup(repo, referenceId);
+                 GitSignature committer = Commit.gitCommitCommitter(commit)) {
                 assertNotNull(committer);
                 assertEquals(TestUtils.NAME, committer.name());
                 assertEquals(TestUtils.EMAIL, committer.email());
@@ -113,8 +113,8 @@ class CommitTest {
         try (GitRepository repo = Repository.gitRepositoryOpen(PATH)) {
             GitOid referenceId = Refs.gitReferenceNameToId(repo, "HEAD");
             assert referenceId != null;
-            try (GitCommit commit = Commit.gitCommitLookup(repo, referenceId)) {
-                GitSignature author = Commit.gitCommitAuthor(commit);
+            try (GitCommit commit = Commit.gitCommitLookup(repo, referenceId);
+                 GitSignature author = Commit.gitCommitAuthor(commit)) {
                 assertNotNull(author);
                 assertEquals(TestUtils.NAME, author.name());
                 assertEquals(TestUtils.EMAIL, author.email());
