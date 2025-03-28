@@ -90,7 +90,6 @@ class CommitTest {
                         assertNotNull(commitId);
                     }
                 }
-
             }
         }
     }
@@ -103,10 +102,8 @@ class CommitTest {
             try (GitCommit commit = Commit.gitCommitLookup(repo, referenceId)) {
                 GitSignature committer = Commit.gitCommitCommitter(commit);
                 assertNotNull(committer);
-                try (GitSignature signature = Signature.gitSignatureNow(TestUtils.NAME, TestUtils.EMAIL)) {
-                    assertEquals(signature.name(), committer.name());
-                    assertEquals(signature.email(), committer.email());
-                }
+                assertEquals(TestUtils.NAME, committer.name());
+                assertEquals(TestUtils.EMAIL, committer.email());
             }
         }
     }
@@ -119,10 +116,8 @@ class CommitTest {
             try (GitCommit commit = Commit.gitCommitLookup(repo, referenceId)) {
                 GitSignature author = Commit.gitCommitAuthor(commit);
                 assertNotNull(author);
-                try (GitSignature signature = Signature.gitSignatureNow(TestUtils.NAME, TestUtils.EMAIL)) {
-                    assertEquals(signature.name(), author.name());
-                    assertEquals(signature.email(), author.email());
-                }
+                assertEquals(TestUtils.NAME, author.name());
+                assertEquals(TestUtils.EMAIL, author.email());
             }
         }
     }
