@@ -1,10 +1,13 @@
 ** jgit2                                                           :noexport:
 Java Foreign Function & Memory bindings for [[https://libgit2.org/][libgit2]].
+
+/[Warning: This library is still in early development and subject to change. I'm still exploring Java FFM and learning how to interop with C libraries, so expect rough edges and improvements over time.]/
 ** Table of contents                                                  :TOC_3:
   - [[#requirements][Requirements]]
   - [[#java-bindings][Java bindings]]
   - [[#usage-examples][Usage examples]]
     - [[#initialize-a-repo-create-commits-and-log-commit-information][Initialize a repo, create commits, and log commit information]]
+  - [[#implementation-progress][Implementation Progress]]
   - [[#license][License]]
 
 ** Requirements
@@ -122,6 +125,321 @@ Java bindings were generated using [[https://github.com/openjdk/jextract][jextra
       }
   }
 #+end_src
+** Implementation Progress
+- [ ] annotated_commit
+- [ ] apply
+- [ ] attr
+- [ ] blame
+- [ ] blob
+- [ ] branch
+- [ ] buffer
+- [ ] cert
+- [ ] checkout
+- [ ] cherrypick
+- [ ] clone
+- [-] commit
+  - [X] git_commit_lookup
+  - [ ] git_commit_lookup_prefix
+  - [ ] git_commit_free
+  - [ ] git_commit_id
+  - [ ] git_commit_owner
+  - [ ] git_commit_message_encoding
+  - [X] git_commit_message
+  - [ ] git_commit_message_raw
+  - [ ] git_commit_summary
+  - [ ] git_commit_body
+  - [ ] git_commit_time
+  - [ ] git_commit_time_offset
+  - [ ] git_commit_committer
+  - [X] git_commit_author
+  - [ ] git_commit_committer_with_mailmap
+  - [ ] git_commit_author_with_mailmap
+  - [ ] git_commit_raw_header
+  - [ ] git_commit_tree
+  - [ ] git_commit_tree_id
+  - [ ] git_commit_parentcount
+  - [ ] git_commit_parent
+  - [ ] git_commit_parent_id
+  - [ ] git_commit_nth_gen_ancestor
+  - [ ] git_commit_header_field
+  - [ ] git_commit_extract_signature
+  - [ ] git_commit_create
+  - [X] git_commit_create_v
+  - [ ] git_commit_create_from_stage
+  - [ ] git_commit_amend
+  - [ ] git_commit_create_buffer
+  - [ ] git_commit_create_with_signature
+  - [ ] git_commit_dup
+  - [ ] git_commitarray_dispose
+- [-] common
+  - [X] git_libgit2_version
+  - [ ] git_libgit2_prerelease
+  - [ ] git_libgit2_features
+  - [ ] git_libgit2_feature_backend
+  - [ ] git_libgit2_opts
+  - [ ] git_libgit2_buildinfo
+- [ ] config
+- [ ] credential
+- [ ] credential_helpers
+- [ ] deprecated
+- [ ] describe
+- [ ] diff
+- [ ] email
+- [ ] errors
+- [ ] filter
+- [X] global
+  - [X] git_libgit2_init
+  - [X] git_libgit2_shutdown
+- [ ] graph
+- [ ] ignore
+- [-] index
+  - [ ] git_index_options_init
+  - [ ] git_index_open
+  - [ ] git_index_new
+  - [ ] git_index_free
+  - [ ] git_index_owner
+  - [ ] git_index_caps
+  - [ ] git_index_set_caps
+  - [ ] git_index_version
+  - [ ] git_index_set_version
+  - [ ] git_index_read
+  - [X] git_index_write
+  - [ ] git_index_path
+  - [ ] git_index_checksum
+  - [ ] git_index_read_tree
+  - [X] git_index_write_tree
+  - [ ] git_index_write_tree_to
+  - [ ] git_index_entrycount
+  - [ ] git_index_clear
+  - [ ] git_index_get_byindex
+  - [ ] git_index_get_bypath
+  - [ ] git_index_remove
+  - [ ] git_index_remove_directory
+  - [ ] git_index_add
+  - [ ] git_index_entry_stage
+  - [ ] git_index_entry_is_conflict
+  - [ ] git_index_iterator_new
+  - [ ] git_index_iterator_next
+  - [ ] git_index_iterator_free
+  - [X] git_index_add_bypath
+  - [ ] git_index_add_from_buffer
+  - [ ] git_index_remove_bypath
+  - [ ] git_index_add_all
+  - [ ] git_index_remove_all
+  - [ ] git_index_update_all
+  - [ ] git_index_find
+  - [ ] git_index_find_prefix
+  - [ ] git_index_conflict_add
+  - [ ] git_index_conflict_get
+  - [ ] git_index_conflict_remove
+  - [ ] git_index_conflict_cleanup
+  - [ ] git_index_has_conflicts
+  - [ ] git_index_conflict_iterator_new
+  - [ ] git_index_conflict_next
+  - [ ] git_index_conflict_iterator_free
+- [ ] indexer
+- [ ] mailmap
+- [ ] merge
+- [-] message
+  - [X] git_message_prettify
+  - [ ] git_message_trailers
+  - [ ] git_message_trailer_array_free
+- [ ] net
+- [ ] notes
+- [ ] object
+- [ ] odb
+- [ ] odb_backend
+- [-] oid
+  - [X] git_oid_fromstr
+  - [ ] git_oid_fromstrp
+  - [ ] git_oid_fromstrn
+  - [ ] git_oid_fromraw
+  - [ ] git_oid_fmt
+  - [ ] git_oid_nfmt
+  - [ ] git_oid_pathfmt
+  - [ ] git_oid_tostr_s
+  - [X] git_oid_tostr
+  - [ ] git_oid_cpy
+  - [ ] git_oid_cmp
+  - [ ] git_oid_equal
+  - [ ] git_oid_ncmp
+  - [ ] git_oid_streq
+  - [ ] git_oid_strcmp
+  - [ ] git_oid_is_zero
+  - [X] git_oid_shorten_new
+  - [X] git_oid_shorten_add
+  - [ ] git_oid_shorten_free
+- [ ] oidarray
+- [ ] pack
+- [ ] patch
+- [ ] pathspec
+- [ ] proxy
+- [ ] rebase
+- [ ] refdb
+- [ ] reflog
+- [-] refs
+  - [ ] git_reference_lookup
+  - [X] git_reference_name_to_id
+  - [ ] git_reference_dwim
+  - [ ] git_reference_symbolic_create_matching
+  - [ ] git_reference_symbolic_create
+  - [ ] git_reference_create
+  - [ ] git_reference_create_matching
+  - [ ] git_reference_target
+  - [ ] git_reference_target_peel
+  - [ ] git_reference_symbolic_target
+  - [ ] git_reference_type
+  - [ ] git_reference_name
+  - [ ] git_reference_resolve
+  - [ ] git_reference_owner
+  - [ ] git_reference_symbolic_set_target
+  - [ ] git_reference_set_target
+  - [ ] git_reference_rename
+  - [ ] git_reference_delete
+  - [ ] git_reference_remove
+  - [ ] git_reference_list
+  - [ ] git_reference_foreach
+  - [ ] git_reference_foreach_name
+  - [ ] git_reference_dup
+  - [ ] git_reference_free
+  - [ ] git_reference_cmp
+  - [ ] git_reference_iterator_new
+  - [ ] git_reference_iterator_glob_new
+  - [ ] git_reference_next
+  - [ ] git_reference_next_name
+  - [ ] git_reference_iterator_free
+  - [ ] git_reference_foreach_glob
+  - [ ] git_reference_has_log
+  - [ ] git_reference_ensure_log
+  - [ ] git_reference_is_branch
+  - [ ] git_reference_is_remote
+  - [ ] git_reference_is_tag
+  - [ ] git_reference_is_note
+  - [ ] git_reference_normalize_name
+  - [ ] git_reference_peel
+  - [ ] git_reference_name_is_valid
+  - [ ] git_reference_shorthand
+- [ ] refspec
+- [ ] remote
+- [-] repository
+  - [X] git_repository_open
+  - [ ] git_repository_open_from_worktree
+  - [ ] git_repository_wrap_odb
+  - [ ] git_repository_discover
+  - [ ] git_repository_open_ext
+  - [ ] git_repository_open_bare
+  - [ ] git_repository_free
+  - [X] git_repository_init
+  - [ ] git_repository_init_options_init
+  - [ ] git_repository_init_ext
+  - [ ] git_repository_head
+  - [ ] git_repository_head_for_worktree
+  - [ ] git_repository_head_detached
+  - [ ] git_repository_head_detached_for_worktree
+  - [ ] git_repository_head_unborn
+  - [ ] git_repository_is_empty
+  - [ ] git_repository_item_path
+  - [ ] git_repository_path
+  - [ ] git_repository_workdir
+  - [ ] git_repository_commondir
+  - [ ] git_repository_set_workdir
+  - [ ] git_repository_is_bare
+  - [ ] git_repository_is_worktree
+  - [ ] git_repository_config
+  - [ ] git_repository_config_snapshot
+  - [ ] git_repository_odb
+  - [ ] git_repository_refdb
+  - [X] git_repository_index
+  - [ ] git_repository_message
+  - [ ] git_repository_message_remove
+  - [ ] git_repository_state_cleanup
+  - [ ] git_repository_fetchhead_foreach
+  - [ ] git_repository_mergehead_foreach
+  - [ ] git_repository_hashfile
+  - [ ] git_repository_set_head
+  - [ ] git_repository_set_head_detached
+  - [ ] git_repository_set_head_detached_from_annotated
+  - [ ] git_repository_detach_head
+  - [ ] git_repository_state
+  - [ ] git_repository_set_namespace
+  - [ ] git_repository_get_namespace
+  - [ ] git_repository_is_shallow
+  - [ ] git_repository_ident
+  - [ ] git_repository_set_ident
+  - [ ] git_repository_oid_type
+  - [ ] git_repository_commit_parents
+- [ ] reset
+- [ ] revert
+- [ ] revparse
+- [-] revwalk
+  - [X] git_revwalk_new
+  - [ ] git_revwalk_reset
+  - [ ] git_revwalk_push
+  - [ ] git_revwalk_push_glob
+  - [X] git_revwalk_push_head
+  - [ ] git_revwalk_hide
+  - [ ] git_revwalk_hide_glob
+  - [ ] git_revwalk_hide_head
+  - [ ] git_revwalk_push_ref
+  - [ ] git_revwalk_hide_ref
+  - [X] git_revwalk_next
+  - [X] git_revwalk_sorting
+  - [ ] git_revwalk_push_range
+  - [ ] git_revwalk_simplify_first_parent
+  - [ ] git_revwalk_free
+  - [ ] git_revwalk_repository
+  - [ ] git_revwalk_add_hide_cb
+- [ ] revert
+- [-] signature
+  - [ ] git_signature_new
+  - [X] git_signature_now
+  - [ ] git_signature_default_from_env
+  - [ ] git_signature_default
+  - [ ] git_signature_from_buffer
+  - [ ] git_signature_dup
+  - [ ] git_signature_free
+- [ ] status
+- [ ] strarray
+- [ ] submodule
+- [ ] tag
+- [ ] trace
+- [ ] transaction
+- [ ] transport
+- [-] tree
+  - [X] git_tree_lookup
+  - [ ] git_tree_lookup_prefix
+  - [ ] git_tree_free
+  - [ ] git_tree_id
+  - [ ] git_tree_owner
+  - [ ] git_tree_entrycount
+  - [ ] git_tree_entry_byname
+  - [ ] git_tree_entry_byindex
+  - [ ] git_tree_entry_byid
+  - [ ] git_tree_entry_bypath
+  - [ ] git_tree_entry_dup
+  - [ ] git_tree_entry_free
+  - [ ] git_tree_entry_name
+  - [ ] git_tree_entry_id
+  - [ ] git_tree_entry_type
+  - [ ] git_tree_entry_filemode
+  - [ ] git_tree_entry_filemode_raw
+  - [ ] git_tree_entry_cmp
+  - [ ] git_tree_entry_to_object
+  - [ ] git_treebuilder_new
+  - [ ] git_treebuilder_clear
+  - [ ] git_treebuilder_entrycount
+  - [ ] git_treebuilder_free
+  - [ ] git_treebuilder_get
+  - [ ] git_treebuilder_insert
+  - [ ] git_treebuilder_remove
+  - [ ] git_treebuilder_filter
+  - [ ] git_treebuilder_write
+  - [ ] git_tree_walk
+  - [ ] git_tree_dup
+  - [ ] git_tree_create_updated
+- [ ] types
+- [ ] version
+- [ ] worktree
 ** License
 Copyright © 2025 Sergio Navarro
 
