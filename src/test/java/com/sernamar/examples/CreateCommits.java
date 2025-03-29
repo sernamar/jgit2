@@ -6,16 +6,18 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import static com.sernamar.jgit2.Commit.gitCommitCreateV;
-import static com.sernamar.jgit2.Commit.gitCommitLookup;
+import static com.sernamar.jgit2.Commit.*;
 import static com.sernamar.jgit2.Global.gitLibgit2Init;
 import static com.sernamar.jgit2.Global.gitLibgit2Shutdown;
 import static com.sernamar.jgit2.Index.*;
 import static com.sernamar.jgit2.Message.gitMessagePrettify;
+import static com.sernamar.jgit2.Oid.gitOidToString;
 import static com.sernamar.jgit2.Refs.gitReferenceNameToId;
 import static com.sernamar.jgit2.Repository.gitRepositoryIndex;
 import static com.sernamar.jgit2.Repository.gitRepositoryInit;
-import static com.sernamar.jgit2.Signature.gitSignatureNow;
+import static com.sernamar.jgit2.Revwalk.gitRevwalkNext;
+import static com.sernamar.jgit2.Revwalk.gitRevwalkPushHead;
+import static com.sernamar.jgit2.Signature.*;
 import static com.sernamar.jgit2.Tree.gitTreeLookup;
 
 public class CreateCommits {
@@ -25,10 +27,11 @@ public class CreateCommits {
 
     private static void createCommit(GitRepository repo, GitTree tree, GitCommit parentCommit, String message) {
         try (GitSignature signature = gitSignatureNow(NAME, EMAIL)) {
-            GitOid commitId = (parentCommit == null)
-                ? gitCommitCreateV(repo, "HEAD", signature, signature, null, gitMessagePrettify(message), tree)
-                : gitCommitCreateV(repo, "HEAD", signature, signature, null, gitMessagePrettify(message), tree, parentCommit);
-            System.out.println("Commit ID: " + commitId);
+            if ((parentCommit == null)) {
+                gitCommitCreateV(repo, "HEAD", signature, signature, null, gitMessagePrettify(message), tree);
+            } else {
+                gitCommitCreateV(repo, "HEAD", signature, signature, null, gitMessagePrettify(message), tree, parentCommit);
+            }
         }
     }
 
@@ -60,6 +63,25 @@ public class CreateCommits {
                 assert referenceId != null;
                 try (GitCommit parentCommit = gitCommitLookup(repo, referenceId)) {
                     createCommit(repo, tree, parentCommit, "Add hello.txt");
+                }
+            }
+	    
+            // Iterate through the commits, printing their information
+            try (GitRevwalk walk = Revwalk.gitRevwalkNew(repo)) {
+                gitRevwalkPushHead(walk);
+                GitOid commitId;
+                while ((commitId = gitRevwalkNext(walk)) != null) {
+                    try (GitCommit commit = gitCommitLookup(repo, commitId)) {
+                        GitSignature author = gitCommitAuthor(commit);
+                        GitSignature committer = gitCommitCommitter(commit);
+                        long length = 40 + 1; // SHA1 hex size + 1 for null terminator
+                        System.out.println("Commit ID: " + gitOidToString(commitId, length));
+                        System.out.println("Author: " + gitSignatureName(author) + " <" + gitSignatureEmail(author) + ">");
+                        System.out.println("AuthorDate: " + gitSignatureTime(author));
+                        System.out.println("Committer: " + gitSignatureName(committer) + " <" + gitSignatureEmail(committer) + ">");
+                        System.out.println("CommitDate: " + gitSignatureTime(committer));
+                        System.out.println("Message: " + gitCommitMessage(commit));
+                    }
                 }
             }
         }
