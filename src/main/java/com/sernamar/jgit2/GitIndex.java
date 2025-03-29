@@ -6,9 +6,11 @@ import static com.sernamar.jgit2.bindings.git2_1.git_index_free;
 
 public class GitIndex implements AutoCloseable {
     private MemorySegment segment;
+    private final boolean owned;
 
-    GitIndex(MemorySegment segment) {
+    GitIndex(MemorySegment segment, boolean owned) {
         this.segment = segment;
+        this.owned = owned;
     }
 
     MemorySegment segment() {
@@ -17,7 +19,7 @@ public class GitIndex implements AutoCloseable {
 
     @Override
     public void close() {
-        if (segment != MemorySegment.NULL) {
+        if (owned && segment != MemorySegment.NULL) {
             git_index_free(segment);
             segment = MemorySegment.NULL;
         }

@@ -101,6 +101,6 @@ public final class Repository {
         if (ret < 0) {
             throw new RuntimeException("Failed to get repository index: " + getGitErrorMessage());
         }
-        return new GitIndex(indexSegment.get(C_POINTER, 0));
+        return new GitIndex(indexSegment.get(C_POINTER, 0), true);
     }
 }
