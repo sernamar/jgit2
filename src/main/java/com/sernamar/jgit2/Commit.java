@@ -90,7 +90,7 @@ public final class Commit {
                                           GitTree tree,
                                           GitCommit... parents) {
         Arena arena = Arena.ofAuto();
-        MemorySegment idSegment = git_oid.allocate(arena);
+        MemorySegment oidSegment = git_oid.allocate(arena);
         MemorySegment updateRefSegment = arena.allocateFrom(updateRef);
         MemorySegment messageEncodingSegment =
                 messageEncoding != null ? arena.allocateFrom(messageEncoding) : MemorySegment.NULL;
@@ -110,7 +110,7 @@ public final class Commit {
         // to create an invoker that can be used to call the function.
         git_commit_create_v invoker = git_commit_create_v.makeInvoker(variadicLayouts);
         int ret = invoker.apply(
-                idSegment,
+                oidSegment,
                 repo.segment(),
                 updateRefSegment,
                 author.segment(),
@@ -124,7 +124,7 @@ public final class Commit {
         if (ret < 0) {
             throw new RuntimeException("Failed to create the commit: " + getGitErrorMessage());
         }
-        return new GitOid(idSegment);
+        return new GitOid(oidSegment);
     }
 
     /**

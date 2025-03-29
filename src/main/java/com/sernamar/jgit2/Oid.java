@@ -30,13 +30,13 @@ public final class Oid {
      */
     public static GitOid gitOidFromString(String string) {
         Arena arena = Arena.ofAuto();
-        MemorySegment idSegment = git_oid.allocate(arena);
+        MemorySegment oidSegment = git_oid.allocate(arena);
         MemorySegment stringSegment = arena.allocateFrom(string);
-        int ret = git_oid_fromstr(idSegment, stringSegment);
+        int ret = git_oid_fromstr(oidSegment, stringSegment);
         if (ret < 0) {
             throw new RuntimeException("Failed to convert string to OID: " + getGitErrorMessage());
         }
-        return new GitOid(idSegment);
+        return new GitOid(oidSegment);
     }
 
     /**

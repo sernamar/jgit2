@@ -100,11 +100,11 @@ public final class Revwalk {
      */
     public static GitOid gitRevwalkNext(GitRevwalk walk) {
         Arena arena = Arena.ofAuto();
-        MemorySegment idSegment = git_oid.allocate(arena);
-        int ret = git_revwalk_next(idSegment, walk.segment());
+        MemorySegment oidSegment = git_oid.allocate(arena);
+        int ret = git_revwalk_next(oidSegment, walk.segment());
         if (ret == GIT_ITEROVER()) {
             return null; // No more commits to iterate
         }
-        return new GitOid(idSegment);
+        return new GitOid(oidSegment);
     }
 }
