@@ -20,13 +20,12 @@ public final class Signature {
     }
 
     /**
-     * Create a new signature with the current time
+     * Create a new action signature with a timestamp of 'now'.
      * <p>
-     * The signature has the current time, the default time zone, and the
-     * default username and email from the configuration, and the given
-     * name.
+     * Call `git_signature_free()` to free the data.
      *
-     * @param name the name for the signature.
+     * @param name  name of the person.
+     * @param email email of the person.
      * @return the signature.
      */
     public static GitSignature gitSignatureNow(String name, String email) {
@@ -38,7 +37,7 @@ public final class Signature {
         if (ret < 0) {
             throw new RuntimeException("Failed to create signature: " + getGitErrorMessage());
         }
-        MemorySegment signatureSegment = signaturePtr.get(C_POINTER,0);
+        MemorySegment signatureSegment = signaturePtr.get(C_POINTER, 0);
         return new GitSignature(signatureSegment, true);
     }
 
