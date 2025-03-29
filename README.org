@@ -126,7 +126,7 @@ Java bindings were generated using [[https://github.com/openjdk/jextract][jextra
   }
 #+end_src
 ** Implementation progress
-This section tracks the implementation of =libgit2= functions as outlined in the official [[https://libgit2.org/docs/reference/main/][libgit2 documentation]].
+This section tracks the implementation of Java bindings for =libgit2= functions, as outlined in the official [[https://libgit2.org/docs/reference/main/][libgit2 documentation]].
 
 The first level represents the major functional groups from =libgit2=, and the second level lists the specific functions within each group.
 
