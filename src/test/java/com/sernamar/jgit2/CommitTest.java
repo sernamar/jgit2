@@ -1,5 +1,6 @@
 package com.sernamar.jgit2;
 
+import com.sernamar.jgit2.utils.GitException;
 import org.junit.jupiter.api.*;
 
 import static com.sernamar.jgit2.TestUtils.createRepoWithInitialCommit;
@@ -12,8 +13,12 @@ class CommitTest {
 
     @BeforeAll
     static void beforeAll() {
-        Global.gitLibgit2Init();
-        createRepoWithInitialCommit(PATH);
+        try {
+            Global.gitLibgit2Init();
+            createRepoWithInitialCommit(PATH);
+        } catch (GitException e) {
+            throw new RuntimeException("Failed to set up test repository", e);
+        }
     }
 
     @AfterAll
@@ -23,7 +28,7 @@ class CommitTest {
     }
 
     @Test
-    void gitCommitLookup() {
+    void gitCommitLookup() throws GitException {
         try (GitRepository repo = Repository.gitRepositoryOpen(PATH)) {
             GitOid referenceId = Refs.gitReferenceNameToId(repo, "HEAD");
             assert referenceId != null;
@@ -34,7 +39,7 @@ class CommitTest {
     }
 
     @Test
-    void gitCommitMessage() {
+    void gitCommitMessage() throws GitException {
         try (GitRepository repo = Repository.gitRepositoryOpen(PATH)) {
             GitOid referenceId = Refs.gitReferenceNameToId(repo, "HEAD");
             assert referenceId != null;
@@ -46,7 +51,7 @@ class CommitTest {
     }
 
     @Test
-    void gitCommitCreateV() {
+    void gitCommitCreateV() throws GitException {
         // NOTE: In `BeforeAll`, we already created an initial commit using `gitCommitCreateV` with `null` parents, so
         // no need to test the
         // `gitCommitCreateV(repo, updateRef, author, committer, messageEncoding, message, tree)`
@@ -95,7 +100,7 @@ class CommitTest {
     }
 
     @Test
-    void gitCommitCommitter() {
+    void gitCommitCommitter() throws GitException {
         try (GitRepository repo = Repository.gitRepositoryOpen(PATH)) {
             GitOid referenceId = Refs.gitReferenceNameToId(repo, "HEAD");
             assert referenceId != null;
@@ -109,7 +114,7 @@ class CommitTest {
     }
 
     @Test
-    void gitCommitAuthor() {
+    void gitCommitAuthor() throws GitException {
         try (GitRepository repo = Repository.gitRepositoryOpen(PATH)) {
             GitOid referenceId = Refs.gitReferenceNameToId(repo, "HEAD");
             assert referenceId != null;

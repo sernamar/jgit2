@@ -1,5 +1,7 @@
 package com.sernamar.jgit2;
 
+import com.sernamar.jgit2.utils.GitException;
+
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
 
@@ -18,8 +20,9 @@ public final class Common {
      * being currently used.
      *
      * @return the version of the libgit2 library.
+     * @throws GitException if the version cannot be retrieved.
      */
-    public static String gitLibgit2Version() {
+    public static String gitLibgit2Version() throws GitException {
         Arena arena = Arena.ofAuto();
         MemorySegment majorSegment = arena.allocate(C_INT);
         MemorySegment minorSegment = arena.allocate(C_INT);
@@ -27,7 +30,7 @@ public final class Common {
 
         int ret = git_libgit2_version(majorSegment, minorSegment, revSegment);
         if (ret < 0) {
-            throw new RuntimeException("Failed to get libgit2 version: " + getGitErrorMessage());
+            throw new GitException("Failed to get libgit2 version: " + getGitErrorMessage());
         }
 	
         int major = majorSegment.get(C_INT, 0);

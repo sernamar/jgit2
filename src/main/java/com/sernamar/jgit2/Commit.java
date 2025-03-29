@@ -1,6 +1,7 @@
 package com.sernamar.jgit2;
 
 import com.sernamar.jgit2.bindings.git_oid;
+import com.sernamar.jgit2.utils.GitException;
 
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemoryLayout;
@@ -22,13 +23,14 @@ public final class Commit {
      * @param repo the repo to use when locating the commit.
      * @param id   identity of the commit to locate.
      * @return the looked up commit.
+     * @throws GitException if the commit cannot be found.
      */
-    public static GitCommit gitCommitLookup(GitRepository repo, GitOid id) {
+    public static GitCommit gitCommitLookup(GitRepository repo, GitOid id) throws GitException {
         Arena arena = Arena.ofAuto();
         MemorySegment commitSegment = arena.allocate(C_POINTER);
         int ret = git_commit_lookup(commitSegment, repo.segment(), id.segment());
         if (ret < 0) {
-            throw new RuntimeException("Failed to get the commit: " + getGitErrorMessage());
+            throw new GitException("Failed to get the commit: " + getGitErrorMessage());
         }
         return new GitCommit(commitSegment.get(C_POINTER, 0));
     }
@@ -50,36 +52,37 @@ public final class Commit {
      * Create new commit in the repository using a variable argument list.
      * <p>
      * The message will **not** be cleaned up automatically. You can do that
-     * with the `git_message_prettify()` function.
+     * with the `gitMessagePrettify()` method.
      * <p>
-     * The parents for the commit are specified as a variable list of pointers
-     * to `const git_commit *`. Note that this is a convenience method which may
-     * not be safe to export for certain languages or compilers
+     * The parents for the commit are specified as a variable list of
+     * `GitCommit` objects.
      * <p>
-     * All other parameters remain the same as `git_commit_create()`.
+     * All other parameters remain the same as `gitCommitCreate()`.
      *
-     * @param repo            Repository where to store the commit
-     * @param updateRef       If not NULL, name of the reference that
+     * @param repo            repository where to store the commit.
+     * @param updateRef       if not `null`, name of the reference that
      *                        will be updated to point to this commit. If the reference
      *                        is not direct, it will be resolved to a direct reference.
      *                        Use "HEAD" to update the HEAD of the current branch and
      *                        make it point to this commit. If the reference doesn't
      *                        exist yet, it will be created. If it does exist, the first
      *                        parent must be the tip of this branch.
-     * @param author          Signature with author and author time of commit
-     * @param committer       Signature with committer and * commit time of commit
-     * @param messageEncoding The encoding for the message in the
+     * @param author          signature with author and author time of commit.
+     * @param committer       signature with committer and commit time of commit.
+     * @param messageEncoding the encoding for the message in the
      *                        commit, represented with a standard encoding name.
      *                        E.g. "UTF-8". If NULL, no encoding header is written and
      *                        UTF-8 is assumed.
-     * @param message         Full message for this commit
-     * @param tree            An instance of a `git_tree` object that will
+     * @param message         full message for this commit.
+     * @param tree            an instance of a `GitTree` object that will
      *                        be used as the tree for the commit. This tree object must
      *                        also be owned by the given `repo`.
-     * @param parents         Variable argument list of parents for this commit.
+     * @param parents         variable argument list of parents for this commit.
      * @return the OID of the newly created commit.
+     * @throws GitException if the commit cannot be created.
+     * <p>
      * The created commit will be written to the Object Database and
-     * the given reference will be updated to point to it
+     * the given reference will be updated to point to it.
      */
     public static GitOid gitCommitCreateV(GitRepository repo,
                                           String updateRef,
@@ -88,7 +91,7 @@ public final class Commit {
                                           String messageEncoding,
                                           String message,
                                           GitTree tree,
-                                          GitCommit... parents) {
+                                          GitCommit... parents) throws GitException {
         Arena arena = Arena.ofAuto();
         MemorySegment oidSegment = git_oid.allocate(arena);
         MemorySegment updateRefSegment = arena.allocateFrom(updateRef);
@@ -122,7 +125,7 @@ public final class Commit {
                 (Object[]) parentSegments
         );
         if (ret < 0) {
-            throw new RuntimeException("Failed to create the commit: " + getGitErrorMessage());
+            throw new GitException("Failed to create the commit: " + getGitErrorMessage());
         }
         return new GitOid(oidSegment);
     }
@@ -131,7 +134,7 @@ public final class Commit {
      * Get the committer of a commit.
      *
      * @param commit a previously loaded commit.
-     * @return the committer of a commit
+     * @return the committer of a commit.
      */
     public static GitSignature gitCommitCommitter(GitCommit commit) {
         return new GitSignature(git_commit_committer(commit.segment()), false);
@@ -141,7 +144,7 @@ public final class Commit {
      * Get the author of a commit.
      *
      * @param commit a previously loaded commit.
-     * @return the author of a commit
+     * @return the author of a commit.
      */
     public static GitSignature gitCommitAuthor(GitCommit commit) {
         return new GitSignature(git_commit_author(commit.segment()), false);

@@ -1,5 +1,6 @@
 package com.sernamar.jgit2;
 
+import com.sernamar.jgit2.utils.GitException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -14,8 +15,12 @@ class TreeTest {
 
     @BeforeAll
     static void beforeAll() {
-        Global.gitLibgit2Init();
-        createRepoWithInitialCommit(PATH);
+        try {
+            Global.gitLibgit2Init();
+            createRepoWithInitialCommit(PATH);
+        } catch (GitException e) {
+            throw new RuntimeException("Failed to set up test repository", e);
+        }
     }
 
     @AfterAll
@@ -25,7 +30,7 @@ class TreeTest {
     }
 
     @Test
-    void gitTreeLookup() {
+    void gitTreeLookup() throws GitException {
         try (GitRepository repo = Repository.gitRepositoryOpen(PATH);
              GitIndex index = Repository.gitRepositoryIndex(repo)) {
             GitOid treeId = Index.gitIndexWriteTree(index);

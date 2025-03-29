@@ -1,5 +1,6 @@
 package com.sernamar.jgit2;
 
+import com.sernamar.jgit2.utils.GitException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -37,7 +38,7 @@ class RepositoryTest {
             }
         });
         // Don't have permission to create a repository in the /root directory.
-        assertThrows(RuntimeException.class, () -> {
+        assertThrows(GitException.class, () -> {
             try (GitRepository repo = Repository.gitRepositoryInit("/root/repo")) {
                 assertNotNull(repo);
             }
@@ -46,7 +47,7 @@ class RepositoryTest {
     }
 
     @Test
-    void gitRepositoryOpen() {
+    void gitRepositoryOpen() throws GitException {
         try (GitRepository _ = Repository.gitRepositoryInit(PATH);
              GitRepository repo = Repository.gitRepositoryOpen(PATH)) {
             assertNotNull(repo);
@@ -54,7 +55,7 @@ class RepositoryTest {
     }
 
     @Test
-    void gitRepositoryIndex() {
+    void gitRepositoryIndex() throws GitException {
         try (GitRepository repo = Repository.gitRepositoryInit(PATH);
              GitIndex index = Repository.gitRepositoryIndex(repo)) {
             assertNotNull(index);

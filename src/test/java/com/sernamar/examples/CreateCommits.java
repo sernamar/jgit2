@@ -1,6 +1,7 @@
 package com.sernamar.examples;
 
 import com.sernamar.jgit2.*;
+import com.sernamar.jgit2.utils.GitException;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -25,7 +26,7 @@ public class CreateCommits {
     private static final String NAME = "sernamar";
     private static final String EMAIL = "sernamar@protonmail.com";
 
-    private static void createCommit(GitRepository repo, GitTree tree, GitCommit parentCommit, String message) {
+    private static void createCommit(GitRepository repo, GitTree tree, GitCommit parentCommit, String message) throws GitException {
         try (GitSignature signature = gitSignatureNow(NAME, EMAIL)) {
             if ((parentCommit == null)) {
                 gitCommitCreateV(repo, "HEAD", signature, signature, null, gitMessagePrettify(message), tree);
@@ -84,6 +85,8 @@ public class CreateCommits {
                     }
                 }
             }
+        } catch (GitException e) {
+            System.err.println(e.getMessage());
         }
         gitLibgit2Shutdown();
     }

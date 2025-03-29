@@ -1,5 +1,7 @@
 package com.sernamar.jgit2;
 
+import com.sernamar.jgit2.utils.GitException;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -14,7 +16,7 @@ public class TestUtils {
     static final String EMAIL = "name@mail.com";
     static final String MESSAGE = "Initial commit";
 
-    static void createRepoWithInitialCommit(String path) {
+    static void createRepoWithInitialCommit(String path) throws GitException {
         try (GitRepository repo = Repository.gitRepositoryInit(path);
              GitIndex index = Repository.gitRepositoryIndex(repo)) {
             GitOid treeId = Index.gitIndexWriteTree(index);

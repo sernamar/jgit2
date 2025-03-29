@@ -1,5 +1,6 @@
 package com.sernamar.jgit2;
 
+import com.sernamar.jgit2.utils.GitException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -22,7 +23,7 @@ class OidTest {
     }
 
     @Test
-    void gitOidToString() {
+    void gitOidToString() throws GitException {
         String oidString = "fc2f1be150833453be26f10d2a26cd2f967b9297";
         GitOid oid = Oid.gitOidFromString(oidString);
         long length = GIT_OID_SHA1_HEXSIZE() + 1; // 40 + 1
@@ -36,7 +37,7 @@ class OidTest {
     }
 
     @Test
-    void oidStringRoundTrip() {
+    void oidStringRoundTrip() throws GitException {
         String oidString = "fc2f1be150833453be26f10d2a26cd2f967b9297";
         GitOid oid = Oid.gitOidFromString(oidString);
         assertNotNull(oid);
@@ -45,7 +46,7 @@ class OidTest {
     }
 
     @Test
-    void oidShortenRoundTrip() {
+    void oidShortenRoundTrip() throws GitException {
         String oid = "fc2f1be150833453be26f10d2a26cd2f967b9297";
         long minLength = 7;
         try (GitOidShorten shorten = Oid.gitOidShortenNew(minLength)) {

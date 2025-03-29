@@ -1,6 +1,7 @@
 package com.sernamar.jgit2;
 
 import com.sernamar.jgit2.bindings.git_oid;
+import com.sernamar.jgit2.utils.GitException;
 
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
@@ -31,26 +32,28 @@ public final class Revwalk {
      *
      * @param repo the repo to walk through.
      * @return the new revision walker.
+     * @throws GitException if the walker could not be created.
      */
-    public static GitRevwalk gitRevwalkNew(GitRepository repo) {
+    public static GitRevwalk gitRevwalkNew(GitRepository repo) throws GitException {
         Arena arena = Arena.ofAuto();
         MemorySegment walkSegment = arena.allocate(C_POINTER);
         int ret = git_revwalk_new(walkSegment, repo.segment());
         if (ret < 0) {
-            throw new RuntimeException("Failed to create revwalk: " + getGitErrorMessage());
+            throw new GitException("Failed to create revwalk: " + getGitErrorMessage());
         }
         return new GitRevwalk(walkSegment.get(C_POINTER, 0));
     }
 
     /**
-     * Push the repository's HEAD
+     * Push the repository's HEAD.
      *
-     * @param walk the walker being used for the traversal
+     * @param walk the walker being used for the traversal.
+     * @throws GitException if the push fails.
      */
-    public static void gitRevwalkPushHead(GitRevwalk walk) {
+    public static void gitRevwalkPushHead(GitRevwalk walk) throws GitException {
         int ret = git_revwalk_push_head(walk.segment());
         if (ret < 0) {
-            throw new RuntimeException("Failed to push HEAD: " + getGitErrorMessage());
+            throw new GitException("Failed to push HEAD: " + getGitErrorMessage());
         }
     }
 
@@ -61,8 +64,9 @@ public final class Revwalk {
      * Changing the sorting mode resets the walker.
      *
      * @param walk the walker being used for the traversal.
+     * @throws GitException if the sorting mode could not be set.
      */
-    public static void gitRevwalkSorting(GitRevwalk walk) {
+    public static void gitRevwalkSorting(GitRevwalk walk) throws GitException {
         gitRevwalkSorting(walk, GIT_SORT_NONE());
     }
 
@@ -73,12 +77,13 @@ public final class Revwalk {
      * Changing the sorting mode resets the walker.
      *
      * @param walk the walker being used for the traversal.
-     * @param sortMode combination of GIT_SORT_XXX flags
+     * @param sortMode combination of GIT_SORT_XXX flags.
+     * @throws GitException if the sorting mode could not be set.
      */
-    public static void gitRevwalkSorting(GitRevwalk walk, int sortMode) {
+    public static void gitRevwalkSorting(GitRevwalk walk, int sortMode) throws GitException {
         int ret = git_revwalk_sorting(walk.segment(), sortMode);
         if (ret < 0) {
-            throw new RuntimeException("Failed to set revwalk sorting: " + getGitErrorMessage());
+            throw new GitException("Failed to set revwalk sorting: " + getGitErrorMessage());
         }
     }
 

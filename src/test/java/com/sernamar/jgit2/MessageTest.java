@@ -1,5 +1,6 @@
 package com.sernamar.jgit2;
 
+import com.sernamar.jgit2.utils.GitException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -19,7 +20,7 @@ class MessageTest {
     }
 
     @Test
-    void gitMessagePrettify() {
+    void gitMessagePrettify() throws GitException {
          // Message with trailing whitespace
         String message = "Hello, World!  ";
         String expected = "Hello, World!\n";

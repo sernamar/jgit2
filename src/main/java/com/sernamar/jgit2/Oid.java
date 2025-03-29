@@ -1,11 +1,13 @@
 package com.sernamar.jgit2;
 
 import com.sernamar.jgit2.bindings.git_oid;
+import com.sernamar.jgit2.utils.GitException;
 
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
 
 import static com.sernamar.jgit2.bindings.git2.GIT_OID_SHA1_HEXSIZE;
+import static com.sernamar.jgit2.bindings.git2_1.GIT_ERROR_INVALID;
 import static com.sernamar.jgit2.bindings.git2_2.*;
 import static com.sernamar.jgit2.utils.GitError.getGitErrorMessage;
 
@@ -16,39 +18,38 @@ public final class Oid {
     }
 
     /**
-     * Parse a hex formatted object id into a git_oid.
+     * Parse a hex formatted object id into a GitOid object.
      * <p>
      * The appropriate number of bytes for the given object ID type will
      * be read from the string - 40 bytes for SHA1, 64 bytes for SHA256.
-     * The given string need not be NUL terminated.
      *
-     * @param string input hex string; must be pointing at the start of
-     *               the hex sequence and have at least the number of bytes
+     * @param string input hex string; must have at least the number of bytes
      *               needed for an oid encoded in hex (40 bytes for sha1,
      *               256 bytes for sha256).
      * @return the OID.
+     * @throws GitException if the conversion fails.
      */
-    public static GitOid gitOidFromString(String string) {
+    public static GitOid gitOidFromString(String string) throws GitException {
         Arena arena = Arena.ofAuto();
         MemorySegment oidSegment = git_oid.allocate(arena);
         MemorySegment stringSegment = arena.allocateFrom(string);
         int ret = git_oid_fromstr(oidSegment, stringSegment);
         if (ret < 0) {
-            throw new RuntimeException("Failed to convert string to OID: " + getGitErrorMessage());
+            throw new GitException("Failed to convert string to OID: " + getGitErrorMessage());
         }
         return new GitOid(oidSegment);
     }
 
     /**
-     * Format a git_oid into a buffer as a hex format c-string.
+     * Format a GitOid object into a hex format String.
      * <p>
      * If the buffer is smaller than the size of a hex-formatted oid string
      * plus an additional byte (GIT_OID_SHA_HEXSIZE + 1 for SHA1 or
      * GIT_OID_SHA256_HEXSIZE + 1 for SHA256), then the function will
      * throw an IllegalArgumentException.
      * <p>
-     * If there are any input parameter errors (out == NULL, n == 0, oid ==
-     * NULL), then a pointer to an empty string is returned, so that the
+     * If there are any input parameter errors (out == null, n == 0,
+     * oid == null), then an empty string is returned, so that the
      * return value can always be printed.
      *
      * @param id     the oid structure to format.
@@ -106,14 +107,17 @@ public final class Oid {
      * @param shortenerId the OID shortener.
      * @param textId      an OID in text form.
      * @return the minimal length to uniquely identify all OIDs
-     * added so far to the set.
+     *         added so far to the set.
+     * @throws GitException if the addition fails.
      */
-    public static int gitOidShortenAdd(GitOidShorten shortenerId, String textId) {
+    public static int gitOidShortenAdd(GitOidShorten shortenerId, String textId) throws GitException {
         Arena arena = Arena.ofAuto();
         MemorySegment textIdSegment = arena.allocateFrom(textId);
         int ret = git_oid_shorten_add(shortenerId.segment(), textIdSegment);
-        if (ret < 0) {
-            throw new RuntimeException("Failed to add OID to shortener: " + getGitErrorMessage());
+        if (ret == GIT_ERROR_INVALID()) {
+            throw new GitException("Attempting to add more than the maximum number of OIDs: " + getGitErrorMessage());
+        } else if (ret < 0) {
+            throw new GitException("Failed to add OID to shortener: " + getGitErrorMessage());
         }
         return ret;
     }

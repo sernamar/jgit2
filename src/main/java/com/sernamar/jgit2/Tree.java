@@ -1,5 +1,7 @@
 package com.sernamar.jgit2;
 
+import com.sernamar.jgit2.utils.GitException;
+
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
 
@@ -19,13 +21,14 @@ public final class Tree {
      * @param repo the repo to use when locating the tree.
      * @param id   identity of the tree to locate.
      * @return the located tree.
+     * @throws GitException if the tree could not be located.
      */
-    public static GitTree gitTreeLookup(GitRepository repo, GitOid id) {
+    public static GitTree gitTreeLookup(GitRepository repo, GitOid id) throws GitException {
         Arena arena = Arena.ofAuto();
         MemorySegment treeSegment = arena.allocate(C_POINTER);
         int ret = git_tree_lookup(treeSegment, repo.segment(), id.segment());
         if (ret < 0) {
-            throw new RuntimeException("Failed to lookup tree: " + getGitErrorMessage());
+            throw new GitException("Failed to lookup tree: " + getGitErrorMessage());
         }
         return new GitTree(treeSegment.get(C_POINTER, 0));
     }

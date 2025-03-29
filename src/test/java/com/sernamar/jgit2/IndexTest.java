@@ -1,5 +1,6 @@
 package com.sernamar.jgit2;
 
+import com.sernamar.jgit2.utils.GitException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -20,8 +21,12 @@ class IndexTest {
 
     @BeforeAll
     static void beforeAll() {
-        Global.gitLibgit2Init();
-        createRepoWithInitialCommit(PATH);
+        try {
+            Global.gitLibgit2Init();
+            createRepoWithInitialCommit(PATH);
+        } catch (GitException e) {
+            throw new RuntimeException("Failed to set up test repository", e);
+        }
     }
 
     @AfterAll
@@ -31,7 +36,7 @@ class IndexTest {
     }
 
     @Test
-    void gitIndexAddByPath() {
+    void gitIndexAddByPath() throws GitException {
         try {
             Files.write(Paths.get(PATH, "hello.txt"), "Hello, World!".getBytes());
         } catch (IOException e) {
@@ -44,7 +49,7 @@ class IndexTest {
     }
 
     @Test
-    void gitIndexWrite() {
+    void gitIndexWrite() throws GitException {
         try {
             Files.write(Paths.get(PATH, "hello.txt"), "Hello, World!".getBytes());
         } catch (IOException e) {
@@ -58,7 +63,7 @@ class IndexTest {
     }
 
     @Test
-    void gitIndexWriteTree() {
+    void gitIndexWriteTree() throws GitException {
         try {
             Files.write(Paths.get(PATH, "hello.txt"), "Hello, World!".getBytes());
         } catch (IOException e) {

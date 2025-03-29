@@ -1,5 +1,6 @@
 package com.sernamar.jgit2;
 
+import com.sernamar.jgit2.utils.GitException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -22,7 +23,7 @@ class SignatureTest {
     }
 
     @Test
-    void testSignature() {
+    void testSignature() throws GitException {
         try (GitSignature signature = Signature.gitSignatureNow(NAME, EMAIL)) {
             assertNotNull(signature);
             assertEquals(NAME, Signature.gitSignatureName(signature));

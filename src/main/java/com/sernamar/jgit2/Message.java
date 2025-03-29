@@ -1,6 +1,7 @@
 package com.sernamar.jgit2;
 
 import com.sernamar.jgit2.bindings.git_buf;
+import com.sernamar.jgit2.utils.GitException;
 
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
@@ -21,8 +22,9 @@ public final class Message {
      *
      * @param message the message to be prettified.
      * @return the prettified message.
+     * @throws GitException if the prettification fails.
      */
-    public static String gitMessagePrettify(String message) {
+    public static String gitMessagePrettify(String message) throws GitException {
         return gitMessagePrettify(message, true, '#');
     }
 
@@ -35,8 +37,9 @@ public final class Message {
      * @param stripComments `true` to remove comment lines, `false` to leave them in.
 
      * @return the prettified message.
+     * @throws GitException if the prettification fails.
      */
-    public static String gitMessagePrettify(String message, boolean stripComments) {
+    public static String gitMessagePrettify(String message, boolean stripComments) throws GitException {
         return gitMessagePrettify(message, stripComments, '#');
     }
 
@@ -50,14 +53,15 @@ public final class Message {
      * @param commentChar   comment character. Lines starting with this character are considered
      *                      to be comments and removed if `strip_comments` is non-zero.
      * @return the prettified message.
+     * @throws GitException if the prettification fails.
      */
-    public static String gitMessagePrettify(String message, boolean stripComments, char commentChar) {
+    public static String gitMessagePrettify(String message, boolean stripComments, char commentChar) throws GitException {
         Arena arena = Arena.ofAuto();
         MemorySegment outSegment = git_buf.allocate(arena);
         MemorySegment messageSegment = arena.allocateFrom(message);
         int ret = git_message_prettify(outSegment, messageSegment, stripComments ? 1 : 0, (byte) commentChar);
         if (ret < 0) {
-            throw new RuntimeException("Failed to prettify message: " + getGitErrorMessage());
+            throw new GitException("Failed to prettify message: " + getGitErrorMessage());
         }
         String prettifiedMessage = git_buf.ptr(outSegment).getString(0);
         // De-allocate native (off-heap) memory here, so there's no need to create a `AutoCloseable` `GitBuf` class

@@ -1,6 +1,7 @@
 package com.sernamar.jgit2;
 
 import com.sernamar.jgit2.bindings.git_oid;
+import com.sernamar.jgit2.utils.GitException;
 
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
@@ -32,13 +33,14 @@ public final class Index {
      *
      * @param index an existing index.
      * @param path  filename to add.
+     * @throws GitException if the index is bare or the file cannot be read.
      */
-    public static void gitIndexAddByPath(GitIndex index, String path) {
+    public static void gitIndexAddByPath(GitIndex index, String path) throws GitException {
         Arena arena = Arena.ofAuto();
         MemorySegment pathSegment = arena.allocateFrom(path);
         int ret = git_index_add_bypath(index.segment(), pathSegment);
         if (ret < 0) {
-            throw new RuntimeException("Failed to add file to index: " + getGitErrorMessage());
+            throw new GitException("Failed to add file to index: " + getGitErrorMessage());
         }
     }
 
@@ -47,16 +49,17 @@ public final class Index {
      * using an atomic file lock.
      *
      * @param index an existing index.
+     * @throws GitException if the index cannot be written.
      */
-    public static void gitIndexWrite(GitIndex index) {
+    public static void gitIndexWrite(GitIndex index) throws GitException {
         int ret = git_index_write(index.segment());
         if (ret < 0) {
-            throw new RuntimeException("Failed to write index: " + getGitErrorMessage());
+            throw new GitException("Failed to write index: " + getGitErrorMessage());
         }
     }
 
     /**
-     * Write the index as a tree
+     * Write the index as a tree.
      * <p>
      * This method will scan the index and write a representation
      * of its current state back to disk; it recursively creates
@@ -71,15 +74,16 @@ public final class Index {
      *
      * @param index index to write.
      * @return the OID where to store the written tree.
+     * @throws GitException if the index is bare or contains unmerged entries.
      */
-    public static GitOid gitIndexWriteTree(GitIndex index) {
+    public static GitOid gitIndexWriteTree(GitIndex index) throws GitException {
         Arena arena = Arena.ofAuto();
         MemorySegment oidSegment = git_oid.allocate(arena);
         int ret = git_index_write_tree(oidSegment, index.segment());
         if (ret == GIT_EUNMERGED()) {
-            throw new RuntimeException("Cannot write tree with unmerged entries: " + getGitErrorMessage());
+            throw new GitException("Cannot write tree with unmerged entries: " + getGitErrorMessage());
         } else if (ret < 0) {
-            throw new RuntimeException("Failed to write index tree: " + getGitErrorMessage());
+            throw new GitException("Failed to write index tree: " + getGitErrorMessage());
         }
         return new GitOid(oidSegment);
     }

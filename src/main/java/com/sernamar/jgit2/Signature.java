@@ -2,6 +2,7 @@ package com.sernamar.jgit2;
 
 import com.sernamar.jgit2.bindings.git_signature;
 import com.sernamar.jgit2.bindings.git_time;
+import com.sernamar.jgit2.utils.GitException;
 
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
@@ -23,19 +24,23 @@ public final class Signature {
      * Create a new action signature with a timestamp of 'now'.
      * <p>
      * Call `git_signature_free()` to free the data.
+     * <p>
+     * Note: angle brackets ('<' and '>') characters are not allowed
+     * to be used in either the `name` or the `email` parameter.
      *
      * @param name  name of the person.
      * @param email email of the person.
      * @return the signature.
+     * @throws GitException if the signature could not be created.
      */
-    public static GitSignature gitSignatureNow(String name, String email) {
+    public static GitSignature gitSignatureNow(String name, String email) throws GitException {
         Arena arena = Arena.ofAuto();
         MemorySegment signaturePtr = arena.allocate(C_POINTER);
         MemorySegment nameSegment = arena.allocateFrom(name);
         MemorySegment emailSegment = arena.allocateFrom(email);
         int ret = git_signature_now(signaturePtr, nameSegment, emailSegment);
         if (ret < 0) {
-            throw new RuntimeException("Failed to create signature: " + getGitErrorMessage());
+            throw new GitException("Failed to create signature: " + getGitErrorMessage());
         }
         MemorySegment signatureSegment = signaturePtr.get(C_POINTER, 0);
         return new GitSignature(signatureSegment, true);

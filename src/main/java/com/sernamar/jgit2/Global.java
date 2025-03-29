@@ -21,6 +21,7 @@ public final class Global {
      * not subsequently been shutdown.
      *
      * @return the number of initializations of the library.
+     * @throws RuntimeException if the initialization fails.
      */
     public static int gitLibgit2Init() {
         int ret = git_libgit2_init();
@@ -34,11 +35,12 @@ public final class Global {
      * Shutdown the global state
      * <p>
      * Clean up the global state and threading context after calling it as
-     * many times as `git_libgit2_init()` was called - it will return the
+     * many times as `gitLibgit2Init()` was called - it will return the
      * number of remaining initializations that have not been shutdown
      * (after this one).
      *
      * @return the number of remaining initializations of the library.
+     * @throws RuntimeException if the shutdown fails.
      */
     public static int gitLibgit2Shutdown() {
         int ret = git_libgit2_shutdown();
