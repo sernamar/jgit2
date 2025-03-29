@@ -42,10 +42,43 @@ public final class Revwalk {
         return new GitRevwalk(walkSegment.get(C_POINTER, 0));
     }
 
+    /**
+     * Push the repository's HEAD
+     *
+     * @param walk the walker being used for the traversal
+     */
     public static void gitRevwalkPushHead(GitRevwalk walk) {
         int ret = git_revwalk_push_head(walk.segment());
         if (ret < 0) {
             throw new RuntimeException("Failed to push HEAD: " + getGitErrorMessage());
+        }
+    }
+
+    /**
+     * Change the sorting mode when iterating through the
+     * repository's contents.
+     * <p>
+     * Changing the sorting mode resets the walker.
+     *
+     * @param walk the walker being used for the traversal.
+     */
+    public static void gitRevwalkSorting(GitRevwalk walk) {
+        gitRevwalkSorting(walk, GIT_SORT_NONE());
+    }
+
+    /**
+     * Change the sorting mode when iterating through the
+     * repository's contents.
+     * <p>
+     * Changing the sorting mode resets the walker.
+     *
+     * @param walk the walker being used for the traversal.
+     * @param sortMode combination of GIT_SORT_XXX flags
+     */
+    public static void gitRevwalkSorting(GitRevwalk walk, int sortMode) {
+        int ret = git_revwalk_sorting(walk.segment(), sortMode);
+        if (ret < 0) {
+            throw new RuntimeException("Failed to set revwalk sorting: " + getGitErrorMessage());
         }
     }
 

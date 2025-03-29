@@ -42,6 +42,14 @@ class RevwalkTest {
     }
 
     @Test
+    void gitRevwalkSorting() {
+        try (GitRepository repo = Repository.gitRepositoryOpen(PATH);
+             GitRevwalk walk = Revwalk.gitRevwalkNew(repo)) {
+            assertDoesNotThrow(() -> Revwalk.gitRevwalkSorting(walk));
+        }
+    }
+
+    @Test
     void gitRevwalkNext() {
         try (GitRepository repo = Repository.gitRepositoryOpen(PATH);
              GitRevwalk walk = Revwalk.gitRevwalkNew(repo)) {
