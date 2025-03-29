@@ -5,6 +5,7 @@ import com.sernamar.jgit2.bindings.git_oid;
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
 
+import static com.sernamar.jgit2.bindings.git2.GIT_OID_SHA1_HEXSIZE;
 import static com.sernamar.jgit2.bindings.git2_2.*;
 import static com.sernamar.jgit2.utils.GitError.getGitErrorMessage;
 
@@ -41,18 +42,28 @@ public final class Oid {
     /**
      * Format a git_oid into a buffer as a hex format c-string.
      * <p>
+     * If the buffer is smaller than the size of a hex-formatted oid string
+     * plus an additional byte (GIT_OID_SHA_HEXSIZE + 1 for SHA1 or
+     * GIT_OID_SHA256_HEXSIZE + 1 for SHA256), then the function will
+     * throw an IllegalArgumentException.
+     * <p>
      * If there are any input parameter errors (out == NULL, n == 0, oid ==
      * NULL), then a pointer to an empty string is returned, so that the
      * return value can always be printed.
      *
-     * @param id    the oid structure to format.
+     * @param id     the oid structure to format.
      * @param length the size of the out buffer.
      * @return the formatted string.
      */
     public static String gitOidToString(GitOid id, long length) {
+        // TODO: Support SHA256 (see: https://libgit2.org/docs/reference/main/common/git_feature_t.html)
+        long requiredLength = GIT_OID_SHA1_HEXSIZE() + 1;
+        if (length < requiredLength) {
+            throw new IllegalArgumentException("Buffer size is too small");
+        }
         Arena arena = Arena.ofAuto();
-        MemorySegment stringSegment = arena.allocateFrom("");
-        MemorySegment ret = git_oid_tostr(stringSegment, length + 1, id.segment());
+        MemorySegment stringSegment = arena.allocate(length);
+        MemorySegment ret = git_oid_tostr(stringSegment, length, id.segment());
         return ret.getString(0);
     }
 
@@ -95,7 +106,7 @@ public final class Oid {
      * @param shortenerId the OID shortener.
      * @param textId      an OID in text form.
      * @return the minimal length to uniquely identify all OIDs
-     *         added so far to the set.
+     * added so far to the set.
      */
     public static int gitOidShortenAdd(GitOidShorten shortenerId, String textId) {
         Arena arena = Arena.ofAuto();
