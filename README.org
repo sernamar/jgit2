@@ -7,7 +7,7 @@ Java Foreign Function & Memory bindings for [[https://libgit2.org/][libgit2]].
   - [[#java-bindings][Java bindings]]
   - [[#usage-examples][Usage examples]]
     - [[#initialize-a-repo-create-commits-and-log-commit-information][Initialize a repo, create commits, and log commit information]]
-  - [[#implementation-progress][Implementation Progress]]
+  - [[#implementation-progress][Implementation progress]]
   - [[#license][License]]
 
 ** Requirements
@@ -125,7 +125,14 @@ Java bindings were generated using [[https://github.com/openjdk/jextract][jextra
       }
   }
 #+end_src
-** Implementation Progress
+** Implementation progress
+This section tracks the implementation of =libgit2= functions as outlined in the official [[https://libgit2.org/docs/reference/main/][libgit2 documentation]].
+
+The first level represents the major functional groups from =libgit2=, and the second level lists the specific functions within each group.
+
+The checkboxes indicate the status of each: an =X= marks completed, an empty box indicates pending, and a =-= denotes partially implemented.
+
+Below is the current progress on the implementation:
 - [ ] annotated_commit
 - [ ] apply
 - [ ] attr
