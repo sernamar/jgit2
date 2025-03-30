@@ -3,7 +3,7 @@ Java Foreign Function & Memory bindings for [[https://libgit2.org/][libgit2]].
 
 /Warning: This library is still in early development and subject to change. I'm still exploring Java FFM and learning how to interop with C libraries./
 
-/Only the/ =main= /branch should be considered stable. Other branches are used for development, are experimental, and may have breaking changes./
+/Only the/ =main= /branch should be considered stable. Other branches are used for development or are experimental, and may have breaking changes./
 ** Table of contents                                                  :TOC_3:
   - [[#requirements][Requirements]]
   - [[#java-bindings][Java bindings]]
