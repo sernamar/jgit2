@@ -29,10 +29,6 @@ Then, build and install it using [[https://maven.apache.org/][Maven]]:
 #+begin_src sh
   mvn clean install
 #+end_src
-Alternatively, if you have [[https://github.com/casey/just][just]] installed, you can use the predefined recipe:
-#+begin_src sh
-  just install
-#+end_src
 This will compile the project and install it into your local Maven repository, making it available for use in other projects.
 ** Java bindings
 Java bindings were generated using [[https://github.com/openjdk/jextract][jextract]] by running the following command from the project root:
