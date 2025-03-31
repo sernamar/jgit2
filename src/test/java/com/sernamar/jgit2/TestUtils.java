@@ -34,7 +34,7 @@ public class TestUtils {
         }
     }
 
-    static void deleteRepoDirectory(String path) {
+    public static void deleteRepoDirectory(String path) {
         try (Stream<Path> paths = Files.walk(Paths.get(path))) {
             paths.sorted(Comparator.reverseOrder())
                     .map(Path::toFile)

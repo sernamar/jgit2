@@ -30,6 +30,6 @@ public final class Tree {
         if (ret < 0) {
             throw new GitException("Failed to lookup tree: " + getGitErrorMessage());
         }
-        return new GitTree(treeSegment.get(C_POINTER, 0));
+        return new GitTree(treeSegment.get(C_POINTER, 0), true);
     }
 }

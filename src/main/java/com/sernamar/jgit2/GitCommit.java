@@ -6,9 +6,11 @@ import static com.sernamar.jgit2.bindings.git2_2.git_commit_free;
 
 public final class GitCommit implements AutoCloseable {
     private MemorySegment segment;
+    private final boolean owned;
 
-    GitCommit(MemorySegment segment) {
+    GitCommit(MemorySegment segment, boolean owned) {
         this.segment = segment;
+        this.owned = owned;
     }
 
     MemorySegment segment() {
@@ -17,7 +19,7 @@ public final class GitCommit implements AutoCloseable {
 
     @Override
     public void close() {
-        if (segment != MemorySegment.NULL) {
+        if (owned && segment != MemorySegment.NULL) {
             git_commit_free(segment);
             segment = MemorySegment.NULL;
         }

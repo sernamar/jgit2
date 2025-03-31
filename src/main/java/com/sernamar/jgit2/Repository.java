@@ -53,7 +53,7 @@ public final class Repository {
         if (ret < 0) {
             throw new GitException("Failed to initialize repository: " + getGitErrorMessage());
         }
-        return new GitRepository(repoSegment.get(C_POINTER, 0));
+        return new GitRepository(repoSegment.get(C_POINTER, 0), true);
     }
 
     /**
@@ -82,7 +82,7 @@ public final class Repository {
         if (ret < 0) {
             throw new GitException("Failed to open repository: " + getGitErrorMessage());
         }
-        return new GitRepository(repoSegment.get(C_POINTER, 0));
+        return new GitRepository(repoSegment.get(C_POINTER, 0), true);
     }
 
     /**

@@ -6,9 +6,11 @@ import static com.sernamar.jgit2.bindings.git2_1.git_revwalk_free;
 
 public class GitRevwalk implements AutoCloseable {
     private MemorySegment segment;
+    private final boolean owned;
 
-    GitRevwalk(MemorySegment segment) {
+    GitRevwalk(MemorySegment segment, boolean owned) {
         this.segment = segment;
+        this.owned = owned;
     }
 
     MemorySegment segment() {
@@ -17,7 +19,7 @@ public class GitRevwalk implements AutoCloseable {
 
     @Override
     public void close() {
-        if (segment != MemorySegment.NULL) {
+        if (owned && segment != MemorySegment.NULL) {
             git_revwalk_free(segment);
             segment = MemorySegment.NULL;
         }

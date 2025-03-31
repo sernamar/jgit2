@@ -83,7 +83,7 @@ public final class Oid {
      * @return the OID shortener, or `null` if OOM (out of memory).
      */
     public static GitOidShorten gitOidShortenNew(long minLength) {
-        return new GitOidShorten(git_oid_shorten_new(minLength));
+        return new GitOidShorten(git_oid_shorten_new(minLength), true);
     }
 
     /**

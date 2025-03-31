@@ -32,7 +32,7 @@ public final class Commit {
         if (ret < 0) {
             throw new GitException("Failed to get the commit: " + getGitErrorMessage());
         }
-        return new GitCommit(commitSegment.get(C_POINTER, 0));
+        return new GitCommit(commitSegment.get(C_POINTER, 0), true);
     }
 
     /**

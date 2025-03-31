@@ -41,7 +41,7 @@ public final class Revwalk {
         if (ret < 0) {
             throw new GitException("Failed to create revwalk: " + getGitErrorMessage());
         }
-        return new GitRevwalk(walkSegment.get(C_POINTER, 0));
+        return new GitRevwalk(walkSegment.get(C_POINTER, 0), true);
     }
 
     /**
