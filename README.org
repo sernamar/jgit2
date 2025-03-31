@@ -22,8 +22,8 @@ Since this library has not yet been published for distribution, you need to buil
 
 First, clone this repository or download the source code:
 #+begin_src sh
-  git clone <repository-url>
-  cd <repository-name>
+  git clone https://github.com/sernamar/jgit2
+  cd jgit2
 #+end_src
 Then, build and install it using [[https://maven.apache.org/][Maven]]:
 #+begin_src sh
