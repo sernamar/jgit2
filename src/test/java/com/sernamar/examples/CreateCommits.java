@@ -19,6 +19,7 @@ import static com.sernamar.jgit2.Repository.gitRepositoryInit;
 import static com.sernamar.jgit2.Revwalk.gitRevwalkNext;
 import static com.sernamar.jgit2.Revwalk.gitRevwalkPushHead;
 import static com.sernamar.jgit2.Signature.*;
+import static com.sernamar.jgit2.TestUtils.deleteRepoDirectory;
 import static com.sernamar.jgit2.Tree.gitTreeLookup;
 
 public class CreateCommits {
@@ -87,6 +88,8 @@ public class CreateCommits {
             }
         } catch (GitException e) {
             System.err.println(e.getMessage());
+        } finally {
+            deleteRepoDirectory(PATH);
         }
         gitLibgit2Shutdown();
     }
