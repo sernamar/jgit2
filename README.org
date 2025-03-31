@@ -6,6 +6,7 @@ Java Foreign Function & Memory bindings for [[https://libgit2.org/][libgit2]].
 /Only the/ =main= /branch should be considered stable. Other branches are used for development or are experimental, and may have breaking changes./
 ** Table of contents                                                  :TOC_3:
   - [[#requirements][Requirements]]
+  - [[#installation][Installation]]
   - [[#java-bindings][Java bindings]]
   - [[#usage-examples][Usage examples]]
     - [[#initialize-a-repo-create-commits-and-log-commit-information][Initialize a repo, create commits, and log commit information]]
@@ -15,7 +16,17 @@ Java Foreign Function & Memory bindings for [[https://libgit2.org/][libgit2]].
 ** Requirements
 To use this library, you must have =libgit2= installed on your system.
 
-Make sure that the shared library (=libgit2.so= on Linux, =libgit2.dylib= on macOS, or =git2.dll= on Windows) is available in your library search path.  
+Make sure that the shared library (=libgit2.so= on Linux, =libgit2.dylib= on macOS, or =git2.dll= on Windows) is available in your library search path.
+** Installation
+Since this library is not yet published to a repository like Maven Central, you need to build and install it locally. You can do this using Maven:
+#+begin_src sh
+  mvn clean install
+#+end_src
+Alternatively, if you have [[https://github.com/casey/just][just]] installed, you can use the predefined recipe:
+#+begin_src sh
+  just install
+#+end_src
+This will compile the project and install it into your local Maven repository, making it available for use in other projects.
 ** Java bindings
 Java bindings were generated using [[https://github.com/openjdk/jextract][jextract]] by running the following command from the project root:
 #+begin_src sh
