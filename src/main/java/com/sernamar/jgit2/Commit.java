@@ -96,7 +96,7 @@ public final class Commit {
         MemorySegment oidSegment = git_oid.allocate(arena);
         MemorySegment updateRefSegment = arena.allocateFrom(updateRef);
         MemorySegment messageEncodingSegment =
-                messageEncoding != null ? arena.allocateFrom(messageEncoding) : MemorySegment.NULL;
+                (messageEncoding == null) ? MemorySegment.NULL : arena.allocateFrom(messageEncoding);
         MemorySegment messageSegment = arena.allocateFrom(message);
 
         // Convert parents to an array of MemorySegments
