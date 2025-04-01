@@ -35,15 +35,14 @@ public final class Signature {
      */
     public static GitSignature gitSignatureNow(String name, String email) throws GitException {
         Arena arena = Arena.ofAuto();
-        MemorySegment signaturePtr = arena.allocate(C_POINTER);
+        MemorySegment signatureSegment = arena.allocate(C_POINTER);
         MemorySegment nameSegment = arena.allocateFrom(name);
         MemorySegment emailSegment = arena.allocateFrom(email);
-        int ret = git_signature_now(signaturePtr, nameSegment, emailSegment);
+        int ret = git_signature_now(signatureSegment, nameSegment, emailSegment);
         if (ret < 0) {
             throw new GitException("Failed to create signature: " + getGitErrorMessage());
         }
-        MemorySegment signatureSegment = signaturePtr.get(C_POINTER, 0);
-        return new GitSignature(signatureSegment, true);
+        return new GitSignature(signatureSegment.get(C_POINTER, 0), true);
     }
 
     /**
