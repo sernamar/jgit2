@@ -30,7 +30,14 @@ public class UseRawBindings {
             return;
         }
 
+        // Create git* variables
+        MemorySegment repo = MemorySegment.NULL;
+        MemorySegment signature = MemorySegment.NULL;
+        MemorySegment index = MemorySegment.NULL;
+        MemorySegment tree = MemorySegment.NULL;
+
         try (Arena arena = Arena.ofConfined()) {
+
             // Create a new repository
             MemorySegment repoSegment = arena.allocate(C_POINTER);
             MemorySegment pathSegment = arena.allocateFrom(path);
@@ -39,7 +46,7 @@ public class UseRawBindings {
                 System.err.println("Failed to create repository: " + git_error.message(git_error_last()));
                 return;
             }
-            MemorySegment repo = repoSegment.get(C_POINTER, 0);
+            repo = repoSegment.get(C_POINTER, 0);
             System.out.println("Repository created: " + repo);
 
             // Create a default signature
@@ -47,10 +54,9 @@ public class UseRawBindings {
             ret = git_signature_default(signatureSegment, repo);
             if (ret < 0) {
                 System.err.println("Failed to create default signature: " + git_error.message(git_error_last()));
-                git_repository_free(repo);
                 return;
             }
-            MemorySegment signature = signatureSegment.get(C_POINTER, 0);
+            signature = signatureSegment.get(C_POINTER, 0);
             System.out.println("Default signature created: " + signature);
 
             // Open the repository index
@@ -58,11 +64,9 @@ public class UseRawBindings {
             ret = git_repository_index(indexSegment, repo);
             if (ret < 0) {
                 System.err.println("Failed to open repository index: " + git_error.message(git_error_last()));
-                git_signature_free(signature);
-                git_repository_free(repo);
                 return;
             }
-            MemorySegment index = indexSegment.get(C_POINTER, 0);
+            index = indexSegment.get(C_POINTER, 0);
             System.out.println("Repository index opened: " + index);
 
             // Write initial tree
@@ -70,9 +74,6 @@ public class UseRawBindings {
             ret = git_index_write_tree(treeId, index);
             if (ret < 0) {
                 System.err.println("Failed to write tree: " + git_error.message(git_error_last()));
-                git_index_free(index);
-                git_signature_free(signature);
-                git_repository_free(repo);
                 return;
             }
             System.out.println("Initial tree written: " + treeId);
@@ -82,12 +83,9 @@ public class UseRawBindings {
             ret = git_tree_lookup(treeSegment, repo, treeId);
             if (ret < 0) {
                 System.err.println("Failed to look up tree: " + git_error.message(git_error_last()));
-                git_index_free(index);
-                git_signature_free(signature);
-                git_repository_free(repo);
                 return;
             }
-            MemorySegment tree = treeSegment.get(C_POINTER, 0);
+            tree = treeSegment.get(C_POINTER, 0);
             System.out.println("Tree looked up: " + tree);
 
             // Create the initial commit
@@ -112,22 +110,19 @@ public class UseRawBindings {
             );
             if (ret < 0) {
                 System.err.println("Failed to create commit: " + git_error.message(git_error_last()));
-                git_tree_free(tree);
-                git_index_free(index);
-                git_signature_free(signature);
-                git_repository_free(repo);
                 return;
             }
             System.out.println("Initial commit created: " + commitId);
-
+        } catch (Exception e) {
+            System.err.println("Error: " + e.getMessage());
+        } finally {
             // Free git* objects
             git_tree_free(tree);
             git_index_free(index);
             git_signature_free(signature);
             git_repository_free(repo);
-        } catch (Exception e) {
-            System.err.println("Error: " + e.getMessage());
-        } finally {
+
+            // Delete the repository directory
             try (Stream<Path> paths = Files.walk(Paths.get(path))) {
                 paths.sorted(Comparator.reverseOrder())
                         .map(Path::toFile)
