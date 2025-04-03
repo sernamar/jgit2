@@ -5,10 +5,12 @@ import com.sernamar.jgit2.bindings.git_oid;
 import java.io.File;
 import java.io.IOException;
 import java.lang.foreign.Arena;
+import java.lang.foreign.MemoryLayout;
 import java.lang.foreign.MemorySegment;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.stream.Stream;
 
@@ -86,6 +88,36 @@ public class UseRawBindings {
             }
             MemorySegment tree = treeSegment.get(C_POINTER, 0);
             System.out.println("Tree looked up: " + tree);
+
+            // Create the initial commit
+            MemoryLayout[] variadicLayouts = new MemoryLayout[0]; // No parents for the initial commit
+            Arrays.fill(variadicLayouts, C_POINTER);
+            git_commit_create_v invoker = git_commit_create_v.makeInvoker(variadicLayouts);
+
+            MemorySegment commitId = git_oid.allocate(arena);
+            MemorySegment updateRefSegment = arena.allocateFrom("HEAD");
+            MemorySegment messageEncodingSegment = MemorySegment.NULL;
+            MemorySegment messageSegment = arena.allocateFrom("Initial commit");
+            ret = invoker.apply(
+                    commitId,
+                    repo,
+                    updateRefSegment,
+                    signature,
+                    signature,
+                    messageEncodingSegment,
+                    messageSegment,
+                    tree,
+                    0
+            );
+            if (ret < 0) {
+                System.err.println("Failed to create commit: " + ret);
+                git_tree_free(tree);
+                git_index_free(index);
+                git_signature_free(signature);
+                git_repository_free(repo);
+                return;
+            }
+            System.out.println("Initial commit created: " + commitId);
 
             // Free git* objects
             git_tree_free(tree);
