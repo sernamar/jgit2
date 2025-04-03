@@ -48,7 +48,20 @@ public class UseRawBindings {
             MemorySegment signature = signatureSegment.get(C_POINTER, 0);
             System.out.println("Default signature created: " + signature);
 
+            // Open the repository index
+            MemorySegment indexSegment = arena.allocate(C_POINTER);
+            ret = git_repository_index(indexSegment, repo);
+            if (ret < 0) {
+                System.err.println("Failed to open repository index: " + ret);
+                git_signature_free(signature);
+                git_repository_free(repo);
+                return;
+            }
+            MemorySegment index = indexSegment.get(C_POINTER, 0);
+            System.out.println("Repository index opened: " + index);
+
             // Free git* objects
+            git_index_free(index);
             git_signature_free(signature);
             git_repository_free(repo);
         } catch (Exception e) {
