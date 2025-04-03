@@ -20,7 +20,7 @@ import static com.sernamar.jgit2.bindings.git2_2.C_POINTER;
 import static com.sernamar.jgit2.bindings.git2_2.git_repository_init;
 
 public class UseRawBindings {
-    public static String path = "/tmp/repo";
+    private static final String PATH = "/tmp/repo";
 
     public static void main(String[] args) {
         // Init libgit2
@@ -40,7 +40,7 @@ public class UseRawBindings {
 
             // Create a new repository
             MemorySegment repoSegment = arena.allocate(C_POINTER);
-            MemorySegment pathSegment = arena.allocateFrom(path);
+            MemorySegment pathSegment = arena.allocateFrom(PATH);
             ret = git_repository_init(repoSegment, pathSegment, 0);
             if (ret < 0) {
                 throw new Exception("Failed to create repository: " + git_error.message(git_error_last()));
@@ -104,8 +104,7 @@ public class UseRawBindings {
                     0
             );
             if (ret < 0) {
-                System.err.println("Failed to create commit: " + git_error.message(git_error_last()));
-                return;
+                throw new Exception("Failed to create commit: " + git_error.message(git_error_last()));
             }
             System.out.println("Initial commit created: " + commitId);
         } catch (Exception e) {
@@ -118,7 +117,7 @@ public class UseRawBindings {
             git_repository_free(repo);
 
             // Delete the repository directory
-            try (Stream<Path> paths = Files.walk(Paths.get(path))) {
+            try (Stream<Path> paths = Files.walk(Paths.get(PATH))) {
                 paths.sorted(Comparator.reverseOrder())
                         .map(Path::toFile)
                         .forEach(File::delete);
