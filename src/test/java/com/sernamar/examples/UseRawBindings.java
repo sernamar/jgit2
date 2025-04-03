@@ -74,7 +74,21 @@ public class UseRawBindings {
             }
             System.out.println("Initial tree written: " + treeId);
 
+            // Look up the tree
+            MemorySegment treeSegment = arena.allocate(C_POINTER);
+            ret = git_tree_lookup(treeSegment, repo, treeId);
+            if (ret < 0) {
+                System.err.println("Failed to look up tree: " + ret);
+                git_index_free(index);
+                git_signature_free(signature);
+                git_repository_free(repo);
+                return;
+            }
+            MemorySegment tree = treeSegment.get(C_POINTER, 0);
+            System.out.println("Tree looked up: " + tree);
+
             // Free git* objects
+            git_tree_free(tree);
             git_index_free(index);
             git_signature_free(signature);
             git_repository_free(repo);
