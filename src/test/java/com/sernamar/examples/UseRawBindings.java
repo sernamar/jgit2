@@ -1,5 +1,7 @@
 package com.sernamar.examples;
 
+import com.sernamar.jgit2.bindings.git_oid;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.foreign.Arena;
@@ -59,6 +61,18 @@ public class UseRawBindings {
             }
             MemorySegment index = indexSegment.get(C_POINTER, 0);
             System.out.println("Repository index opened: " + index);
+
+            // Write initial tree
+            MemorySegment treeId = git_oid.allocate(arena);
+            ret = git_index_write_tree(treeId, index);
+            if (ret < 0) {
+                System.err.println("Failed to write tree: " + ret);
+                git_index_free(index);
+                git_signature_free(signature);
+                git_repository_free(repo);
+                return;
+            }
+            System.out.println("Initial tree written: " + treeId);
 
             // Free git* objects
             git_index_free(index);
