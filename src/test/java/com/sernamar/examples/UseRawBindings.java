@@ -43,8 +43,7 @@ public class UseRawBindings {
             MemorySegment pathSegment = arena.allocateFrom(path);
             ret = git_repository_init(repoSegment, pathSegment, 0);
             if (ret < 0) {
-                System.err.println("Failed to create repository: " + git_error.message(git_error_last()));
-                return;
+                throw new Exception("Failed to create repository: " + git_error.message(git_error_last()));
             }
             repo = repoSegment.get(C_POINTER, 0);
             System.out.println("Repository created: " + repo);
@@ -53,8 +52,7 @@ public class UseRawBindings {
             MemorySegment signatureSegment = arena.allocate(C_POINTER);
             ret = git_signature_default(signatureSegment, repo);
             if (ret < 0) {
-                System.err.println("Failed to create default signature: " + git_error.message(git_error_last()));
-                return;
+                throw new Exception("Failed to create default signature: " + git_error.message(git_error_last()));
             }
             signature = signatureSegment.get(C_POINTER, 0);
             System.out.println("Default signature created: " + signature);
@@ -63,8 +61,7 @@ public class UseRawBindings {
             MemorySegment indexSegment = arena.allocate(C_POINTER);
             ret = git_repository_index(indexSegment, repo);
             if (ret < 0) {
-                System.err.println("Failed to open repository index: " + git_error.message(git_error_last()));
-                return;
+                throw new Exception("Failed to open repository index: " + git_error.message(git_error_last()));
             }
             index = indexSegment.get(C_POINTER, 0);
             System.out.println("Repository index opened: " + index);
@@ -73,8 +70,7 @@ public class UseRawBindings {
             MemorySegment treeId = git_oid.allocate(arena);
             ret = git_index_write_tree(treeId, index);
             if (ret < 0) {
-                System.err.println("Failed to write tree: " + git_error.message(git_error_last()));
-                return;
+                throw new Exception("Failed to write tree: " + git_error.message(git_error_last()));
             }
             System.out.println("Initial tree written: " + treeId);
 
@@ -82,8 +78,7 @@ public class UseRawBindings {
             MemorySegment treeSegment = arena.allocate(C_POINTER);
             ret = git_tree_lookup(treeSegment, repo, treeId);
             if (ret < 0) {
-                System.err.println("Failed to look up tree: " + git_error.message(git_error_last()));
-                return;
+                throw new Exception("Failed to look up tree: " + git_error.message(git_error_last()));
             }
             tree = treeSegment.get(C_POINTER, 0);
             System.out.println("Tree looked up: " + tree);
