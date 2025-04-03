@@ -10,8 +10,7 @@ import java.nio.file.Paths;
 import java.util.Comparator;
 import java.util.stream.Stream;
 
-import static com.sernamar.jgit2.bindings.git2_1.git_libgit2_init;
-import static com.sernamar.jgit2.bindings.git2_1.git_libgit2_shutdown;
+import static com.sernamar.jgit2.bindings.git2_1.*;
 import static com.sernamar.jgit2.bindings.git2_2.C_POINTER;
 import static com.sernamar.jgit2.bindings.git2_2.git_repository_init;
 
@@ -38,7 +37,19 @@ public class UseRawBindings {
             MemorySegment repo = repoSegment.get(C_POINTER, 0);
             System.out.println("Repository created: " + repo);
 
-            // Free git repository
+            // Create a default signature
+            MemorySegment signatureSegment = arena.allocate(C_POINTER);
+            ret = git_signature_default(signatureSegment, repo);
+            if (ret < 0) {
+                System.err.println("Failed to create default signature: " + ret);
+                git_repository_free(repo);
+                return;
+            }
+            MemorySegment signature = signatureSegment.get(C_POINTER, 0);
+            System.out.println("Default signature created: " + signature);
+
+            // Free git* objects
+            git_signature_free(signature);
             git_repository_free(repo);
         } catch (Exception e) {
             System.err.println("Error: " + e.getMessage());
