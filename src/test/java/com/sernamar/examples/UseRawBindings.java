@@ -1,5 +1,6 @@
 package com.sernamar.examples;
 
+import com.sernamar.jgit2.bindings.git_error;
 import com.sernamar.jgit2.bindings.git_oid;
 
 import java.io.File;
@@ -25,7 +26,7 @@ public class UseRawBindings {
         // Init libgit2
         int ret = git_libgit2_init();
         if (ret < 0) {
-            System.err.println("Failed to initialize libgit2: " + ret);
+            System.err.println("Failed to initialize libgit2: " + git_error.message(git_error_last()));
             return;
         }
 
@@ -35,7 +36,7 @@ public class UseRawBindings {
             MemorySegment pathSegment = arena.allocateFrom(path);
             ret = git_repository_init(repoSegment, pathSegment, 0);
             if (ret < 0) {
-                System.err.println("Failed to create repository: " + ret);
+                System.err.println("Failed to create repository: " + git_error.message(git_error_last()));
                 return;
             }
             MemorySegment repo = repoSegment.get(C_POINTER, 0);
@@ -45,7 +46,7 @@ public class UseRawBindings {
             MemorySegment signatureSegment = arena.allocate(C_POINTER);
             ret = git_signature_default(signatureSegment, repo);
             if (ret < 0) {
-                System.err.println("Failed to create default signature: " + ret);
+                System.err.println("Failed to create default signature: " + git_error.message(git_error_last()));
                 git_repository_free(repo);
                 return;
             }
@@ -56,7 +57,7 @@ public class UseRawBindings {
             MemorySegment indexSegment = arena.allocate(C_POINTER);
             ret = git_repository_index(indexSegment, repo);
             if (ret < 0) {
-                System.err.println("Failed to open repository index: " + ret);
+                System.err.println("Failed to open repository index: " + git_error.message(git_error_last()));
                 git_signature_free(signature);
                 git_repository_free(repo);
                 return;
@@ -68,7 +69,7 @@ public class UseRawBindings {
             MemorySegment treeId = git_oid.allocate(arena);
             ret = git_index_write_tree(treeId, index);
             if (ret < 0) {
-                System.err.println("Failed to write tree: " + ret);
+                System.err.println("Failed to write tree: " + git_error.message(git_error_last()));
                 git_index_free(index);
                 git_signature_free(signature);
                 git_repository_free(repo);
@@ -80,7 +81,7 @@ public class UseRawBindings {
             MemorySegment treeSegment = arena.allocate(C_POINTER);
             ret = git_tree_lookup(treeSegment, repo, treeId);
             if (ret < 0) {
-                System.err.println("Failed to look up tree: " + ret);
+                System.err.println("Failed to look up tree: " + git_error.message(git_error_last()));
                 git_index_free(index);
                 git_signature_free(signature);
                 git_repository_free(repo);
@@ -110,7 +111,7 @@ public class UseRawBindings {
                     0
             );
             if (ret < 0) {
-                System.err.println("Failed to create commit: " + ret);
+                System.err.println("Failed to create commit: " + git_error.message(git_error_last()));
                 git_tree_free(tree);
                 git_index_free(index);
                 git_signature_free(signature);
@@ -139,7 +140,7 @@ public class UseRawBindings {
         // Shutdown libgit2
         ret = git_libgit2_shutdown();
         if (ret < 0) {
-            System.err.println("Failed to shutdown libgit2: " + ret);
+            System.err.println("Failed to shutdown libgit2: " + git_error.message(git_error_last()));
         }
     }
 }
