@@ -1,6 +1,7 @@
 package com.sernamar.jgit2;
 
 import com.sernamar.jgit2.bindings.git_signature;
+import com.sernamar.jgit2.utils.OpaqueDataType;
 
 import java.lang.foreign.MemorySegment;
 
@@ -21,7 +22,7 @@ public final class GitSignature extends OpaqueDataType {
     }
 
     @Override
-    void free(MemorySegment segment) {
+    protected void free(MemorySegment segment) {
         git_signature_free(segment);
     }
 }
