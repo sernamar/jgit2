@@ -4,24 +4,15 @@ import java.lang.foreign.MemorySegment;
 
 import static com.sernamar.jgit2.bindings.git2_2.git_commit_free;
 
-public final class GitCommit implements AutoCloseable {
-    private MemorySegment segment;
-    private final boolean owned;
+public final class GitCommit extends OpaqueDataType {
 
     GitCommit(MemorySegment segment, boolean owned) {
-        this.segment = segment;
-        this.owned = owned;
+        super(segment, owned);
     }
 
-    MemorySegment segment() {
-        return segment;
-    }
 
     @Override
-    public void close() {
-        if (owned && segment != MemorySegment.NULL) {
-            git_commit_free(segment);
-            segment = MemorySegment.NULL;
-        }
+    void free(MemorySegment segment) {
+        git_commit_free(segment);
     }
 }
