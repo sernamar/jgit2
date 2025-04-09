@@ -105,12 +105,13 @@ public final class Revwalk {
      * @return the oid of the next commit.
      */
     public static GitOid gitRevwalkNext(GitRevwalk walk) {
-        Arena arena = Arena.ofAuto();
-        MemorySegment oidSegment = git_oid.allocate(arena);
-        int ret = git_revwalk_next(oidSegment, walk.segment());
-        if (ret == GIT_ITEROVER()) {
-            return null; // No more commits to iterate
+        try (Arena arena = Arena.ofConfined()) {
+            MemorySegment oidSegment = git_oid.allocate(arena);
+            int ret = git_revwalk_next(oidSegment, walk.segment());
+            if (ret == GIT_ITEROVER()) {
+                return null; // No more commits to iterate
+            }
+            return new GitOid(oidSegment);
         }
-        return new GitOid(oidSegment);
     }
 }

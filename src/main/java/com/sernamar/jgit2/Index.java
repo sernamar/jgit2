@@ -78,14 +78,15 @@ public final class Index {
      * @throws GitException if the index is bare or contains unmerged entries.
      */
     public static GitOid gitIndexWriteTree(GitIndex index) throws GitException {
-        Arena arena = Arena.ofAuto();
-        MemorySegment oidSegment = git_oid.allocate(arena);
-        int ret = git_index_write_tree(oidSegment, index.segment());
-        if (ret == GIT_EUNMERGED()) {
-            throw new GitException("Cannot write tree with unmerged entries: " + getGitErrorMessage());
-        } else if (ret < 0) {
-            throw new GitException("Failed to write index tree: " + getGitErrorMessage());
+        try (Arena arena = Arena.ofConfined()) {
+            MemorySegment oidSegment = git_oid.allocate(arena);
+            int ret = git_index_write_tree(oidSegment, index.segment());
+            if (ret == GIT_EUNMERGED()) {
+                throw new GitException("Cannot write tree with unmerged entries: " + getGitErrorMessage());
+            } else if (ret < 0) {
+                throw new GitException("Failed to write index tree: " + getGitErrorMessage());
+            }
+            return new GitOid(oidSegment);
         }
-        return new GitOid(oidSegment);
     }
 }

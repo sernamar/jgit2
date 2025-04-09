@@ -30,14 +30,15 @@ public final class Oid {
      * @throws GitException if the conversion fails.
      */
     public static GitOid gitOidFromString(String string) throws GitException {
-        Arena arena = Arena.ofAuto();
-        MemorySegment oidSegment = git_oid.allocate(arena);
-        MemorySegment stringSegment = arena.allocateFrom(string);
-        int ret = git_oid_fromstr(oidSegment, stringSegment);
-        if (ret < 0) {
-            throw new GitException("Failed to convert string to OID: " + getGitErrorMessage());
+        try (Arena arena = Arena.ofConfined()) {
+            MemorySegment oidSegment = git_oid.allocate(arena);
+            MemorySegment stringSegment = arena.allocateFrom(string);
+            int ret = git_oid_fromstr(oidSegment, stringSegment);
+            if (ret < 0) {
+                throw new GitException("Failed to convert string to OID: " + getGitErrorMessage());
+            }
+            return new GitOid(oidSegment);
         }
-        return new GitOid(oidSegment);
     }
 
     /**
@@ -64,7 +65,8 @@ public final class Oid {
         }
         try (Arena arena = Arena.ofConfined()) {
             MemorySegment stringSegment = arena.allocate(length);
-            MemorySegment ret = git_oid_tostr(stringSegment, length, id.segment());
+            MemorySegment oidSegment = id.allocate(arena);
+            MemorySegment ret = git_oid_tostr(stringSegment, length, oidSegment);
             return ret.getString(0);
         }
     }

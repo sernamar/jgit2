@@ -33,20 +33,20 @@ public final class Refs {
      * @throws GitException if the reference name is invalid or if an error occurs.
      */
     public static GitOid gitReferenceNameToId(GitRepository repo, String name) throws GitException {
-        Arena arena = Arena.ofAuto();
-        MemorySegment oidSegment = git_oid.allocate(arena);
-        MemorySegment refNameSegment = arena.allocateFrom(name);
+        try (Arena arena = Arena.ofConfined()) {
+            MemorySegment oidSegment = git_oid.allocate(arena);
+            MemorySegment refNameSegment = arena.allocateFrom(name);
 
-        int ret = git_reference_name_to_id(oidSegment, repo.segment(), refNameSegment);
+            int ret = git_reference_name_to_id(oidSegment, repo.segment(), refNameSegment);
 
-        if (ret == GIT_ENOTFOUND()) {
-            return null;
-        } else if (ret == GIT_EINVALIDSPEC()) {
-            throw new GitException("Invalid reference name: " + name);
-        } else if (ret < 0) {
-            throw new GitException("Failed to get the OID of the reference: " + getGitErrorMessage());
+            if (ret == GIT_ENOTFOUND()) {
+                return null;
+            } else if (ret == GIT_EINVALIDSPEC()) {
+                throw new GitException("Invalid reference name: " + name);
+            } else if (ret < 0) {
+                throw new GitException("Failed to get the OID of the reference: " + getGitErrorMessage());
+            }
+            return new GitOid(oidSegment);
         }
-
-        return new GitOid(oidSegment);
     }
 }

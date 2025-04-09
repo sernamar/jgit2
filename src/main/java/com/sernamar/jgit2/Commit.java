@@ -28,7 +28,8 @@ public final class Commit {
     public static GitCommit gitCommitLookup(GitRepository repo, GitOid id) throws GitException {
         try (Arena arena = Arena.ofConfined()) {
             MemorySegment commitSegment = arena.allocate(C_POINTER);
-            int ret = git_commit_lookup(commitSegment, repo.segment(), id.segment());
+            MemorySegment oidSegment = id.allocate(arena);
+            int ret = git_commit_lookup(commitSegment, repo.segment(), oidSegment);
             if (ret < 0) {
                 throw new GitException("Failed to get the commit: " + getGitErrorMessage());
             }
@@ -93,42 +94,43 @@ public final class Commit {
                                           String message,
                                           GitTree tree,
                                           GitCommit... parents) throws GitException {
-        Arena arena = Arena.ofAuto();
-        MemorySegment oidSegment = git_oid.allocate(arena);
-        MemorySegment updateRefSegment = arena.allocateFrom(updateRef);
-        MemorySegment messageEncodingSegment =
-                (messageEncoding == null) ? MemorySegment.NULL : arena.allocateFrom(messageEncoding);
-        MemorySegment messageSegment = arena.allocateFrom(message);
+        try (Arena arena = Arena.ofConfined()) {
+            MemorySegment oidSegment = git_oid.allocate(arena);
+            MemorySegment updateRefSegment = arena.allocateFrom(updateRef);
+            MemorySegment messageEncodingSegment =
+                    (messageEncoding == null) ? MemorySegment.NULL : arena.allocateFrom(messageEncoding);
+            MemorySegment messageSegment = arena.allocateFrom(message);
 
-        // Convert parents to an array of MemorySegments
-        MemorySegment[] parentSegments = Arrays.stream(parents)
-                .map(GitCommit::segment)
-                .toArray(MemorySegment[]::new);
+            // Convert parents to an array of MemorySegments
+            MemorySegment[] parentSegments = Arrays.stream(parents)
+                    .map(GitCommit::segment)
+                    .toArray(MemorySegment[]::new);
 
-        // Create a FunctionDescriptor for the variadic parameters
-        MemoryLayout[] variadicLayouts = new MemoryLayout[parents.length];
-        Arrays.fill(variadicLayouts, C_POINTER);
+            // Create a FunctionDescriptor for the variadic parameters
+            MemoryLayout[] variadicLayouts = new MemoryLayout[parents.length];
+            Arrays.fill(variadicLayouts, C_POINTER);
 
 
-        // As `git_commit_create_v` is a variadic function, we need to use the `makeInvoker` method
-        // to create an invoker that can be used to call the function.
-        git_commit_create_v invoker = git_commit_create_v.makeInvoker(variadicLayouts);
-        int ret = invoker.apply(
-                oidSegment,
-                repo.segment(),
-                updateRefSegment,
-                author.segment(),
-                committer.segment(),
-                messageEncodingSegment,
-                messageSegment,
-                tree.segment(),
-                parents.length,
-                (Object[]) parentSegments
-        );
-        if (ret < 0) {
-            throw new GitException("Failed to create the commit: " + getGitErrorMessage());
+            // As `git_commit_create_v` is a variadic function, we need to use the `makeInvoker` method
+            // to create an invoker that can be used to call the function.
+            git_commit_create_v invoker = git_commit_create_v.makeInvoker(variadicLayouts);
+            int ret = invoker.apply(
+                    oidSegment,
+                    repo.segment(),
+                    updateRefSegment,
+                    author.segment(),
+                    committer.segment(),
+                    messageEncodingSegment,
+                    messageSegment,
+                    tree.segment(),
+                    parents.length,
+                    (Object[]) parentSegments
+            );
+            if (ret < 0) {
+                throw new GitException("Failed to create the commit: " + getGitErrorMessage());
+            }
+            return new GitOid(oidSegment);
         }
-        return new GitOid(oidSegment);
     }
 
     /**
