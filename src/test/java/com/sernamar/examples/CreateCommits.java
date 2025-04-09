@@ -78,10 +78,10 @@ public class CreateCommits {
                         GitSignature committer = gitCommitCommitter(commit);
                         long length = 40 + 1; // SHA1 hex size + 1 for null terminator
                         System.out.println("Commit ID: " + gitOidToString(commitId, length));
-                        System.out.println("Author: " + gitSignatureName(author) + " <" + gitSignatureEmail(author) + ">");
-                        System.out.println("AuthorDate: " + gitSignatureTime(author));
-                        System.out.println("Committer: " + gitSignatureName(committer) + " <" + gitSignatureEmail(committer) + ">");
-                        System.out.println("CommitDate: " + gitSignatureTime(committer));
+                        System.out.println("Author: " + author.name() + " <" + author.email() + ">");
+                        System.out.println("AuthorDate: " + author.when().toOffsetDateTime());
+                        System.out.println("Committer: " + committer.name() + " <" + committer.email() + ">");
+                        System.out.println("CommitDate: " + committer.when().toOffsetDateTime());
                         System.out.println("Message: " + gitCommitMessage(commit));
                     }
                 }

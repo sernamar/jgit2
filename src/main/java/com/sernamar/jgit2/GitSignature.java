@@ -20,6 +20,11 @@ public final class GitSignature extends OpaqueDataType {
         return git_signature.email(this.segment()).getString(0);
     }
 
+    public GitTime when() {
+        MemorySegment whenSegment = git_signature.when(this.segment());
+        return new GitTime(whenSegment);
+    }
+
     @Override
     void free(MemorySegment segment) {
         git_signature_free(segment);
