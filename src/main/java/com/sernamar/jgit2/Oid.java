@@ -65,7 +65,7 @@ public final class Oid {
         }
         try (Arena arena = Arena.ofConfined()) {
             MemorySegment stringSegment = arena.allocate(length);
-            MemorySegment oidSegment = id.allocate(arena);
+            MemorySegment oidSegment = id.toSegment(arena);
             MemorySegment ret = git_oid_tostr(stringSegment, length, oidSegment);
             return ret.getString(0);
         }

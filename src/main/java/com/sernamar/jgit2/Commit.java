@@ -28,7 +28,7 @@ public final class Commit {
     public static GitCommit gitCommitLookup(GitRepository repo, GitOid id) throws GitException {
         try (Arena arena = Arena.ofConfined()) {
             MemorySegment commitSegment = arena.allocate(C_POINTER);
-            MemorySegment oidSegment = id.allocate(arena);
+            MemorySegment oidSegment = id.toSegment(arena);
             int ret = git_commit_lookup(commitSegment, repo.segment(), oidSegment);
             if (ret < 0) {
                 throw new GitException("Failed to get the commit: " + getGitErrorMessage());

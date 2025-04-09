@@ -32,7 +32,7 @@ public final class GitOid {
         idBuffer.get(id);
     }
 
-    MemorySegment allocate(SegmentAllocator allocator) {
+    MemorySegment toSegment(SegmentAllocator allocator) {
         MemorySegment oidSegment = git_oid.allocate(allocator);
         MemorySegment idSegment = git_oid.id(oidSegment);
         idSegment.copyFrom(MemorySegment.ofArray(id));
