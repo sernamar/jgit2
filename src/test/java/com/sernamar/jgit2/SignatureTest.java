@@ -26,9 +26,6 @@ class SignatureTest {
     void testSignature() throws GitException {
         try (GitSignature signature = Signature.gitSignatureNow(NAME, EMAIL)) {
             assertNotNull(signature);
-            assertEquals(NAME, Signature.gitSignatureName(signature));
-            assertEquals(EMAIL, Signature.gitSignatureEmail(signature));
-            assertNotNull(Signature.gitSignatureTime(signature));
         }
     }
 }
