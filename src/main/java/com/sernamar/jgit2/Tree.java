@@ -24,12 +24,13 @@ public final class Tree {
      * @throws GitException if the tree could not be located.
      */
     public static GitTree gitTreeLookup(GitRepository repo, GitOid id) throws GitException {
-        Arena arena = Arena.ofAuto();
-        MemorySegment treeSegment = arena.allocate(C_POINTER);
-        int ret = git_tree_lookup(treeSegment, repo.segment(), id.segment());
-        if (ret < 0) {
-            throw new GitException("Failed to lookup tree: " + getGitErrorMessage());
+        try (Arena arena = Arena.ofConfined()) {
+            MemorySegment treeSegment = arena.allocate(C_POINTER);
+            int ret = git_tree_lookup(treeSegment, repo.segment(), id.segment());
+            if (ret < 0) {
+                throw new GitException("Failed to lookup tree: " + getGitErrorMessage());
+            }
+            return new GitTree(treeSegment.get(C_POINTER, 0), true);
         }
-        return new GitTree(treeSegment.get(C_POINTER, 0), true);
     }
 }

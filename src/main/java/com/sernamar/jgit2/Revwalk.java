@@ -35,13 +35,14 @@ public final class Revwalk {
      * @throws GitException if the walker could not be created.
      */
     public static GitRevwalk gitRevwalkNew(GitRepository repo) throws GitException {
-        Arena arena = Arena.ofAuto();
-        MemorySegment walkSegment = arena.allocate(C_POINTER);
-        int ret = git_revwalk_new(walkSegment, repo.segment());
-        if (ret < 0) {
-            throw new GitException("Failed to create revwalk: " + getGitErrorMessage());
+        try (Arena arena = Arena.ofConfined()) {
+            MemorySegment walkSegment = arena.allocate(C_POINTER);
+            int ret = git_revwalk_new(walkSegment, repo.segment());
+            if (ret < 0) {
+                throw new GitException("Failed to create revwalk: " + getGitErrorMessage());
+            }
+            return new GitRevwalk(walkSegment.get(C_POINTER, 0), true);
         }
-        return new GitRevwalk(walkSegment.get(C_POINTER, 0), true);
     }
 
     /**

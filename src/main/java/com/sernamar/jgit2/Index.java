@@ -36,11 +36,12 @@ public final class Index {
      * @throws GitException if the index is bare or the file cannot be read.
      */
     public static void gitIndexAddByPath(GitIndex index, String path) throws GitException {
-        Arena arena = Arena.ofAuto();
-        MemorySegment pathSegment = arena.allocateFrom(path);
-        int ret = git_index_add_bypath(index.segment(), pathSegment);
-        if (ret < 0) {
-            throw new GitException("Failed to add file to index: " + getGitErrorMessage());
+        try (Arena arena = Arena.ofConfined()) {
+            MemorySegment pathSegment = arena.allocateFrom(path);
+            int ret = git_index_add_bypath(index.segment(), pathSegment);
+            if (ret < 0) {
+                throw new GitException("Failed to add file to index: " + getGitErrorMessage());
+            }
         }
     }
 

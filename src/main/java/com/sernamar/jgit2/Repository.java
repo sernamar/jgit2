@@ -45,15 +45,16 @@ public final class Repository {
      * @throws GitException if the repository cannot be created.
      */
     public static GitRepository gitRepositoryInit(String path, boolean isBare) throws GitException {
-        Arena arena = Arena.ofAuto();
-        MemorySegment repoSegment = arena.allocate(C_POINTER);
-        MemorySegment pathSegment = arena.allocateFrom(path);
+        try (Arena arena = Arena.ofConfined()) {
+            MemorySegment repoSegment = arena.allocate(C_POINTER);
+            MemorySegment pathSegment = arena.allocateFrom(path);
 
-        int ret = git_repository_init(repoSegment, pathSegment, isBare ? 1 : 0);
-        if (ret < 0) {
-            throw new GitException("Failed to initialize repository: " + getGitErrorMessage());
+            int ret = git_repository_init(repoSegment, pathSegment, isBare ? 1 : 0);
+            if (ret < 0) {
+                throw new GitException("Failed to initialize repository: " + getGitErrorMessage());
+            }
+            return new GitRepository(repoSegment.get(C_POINTER, 0), true);
         }
-        return new GitRepository(repoSegment.get(C_POINTER, 0), true);
     }
 
     /**
@@ -74,15 +75,16 @@ public final class Repository {
      * @throws GitException if the repository cannot be opened.
      */
     public static GitRepository gitRepositoryOpen(String path) throws GitException {
-        Arena arena = Arena.ofAuto();
-        MemorySegment repoSegment = arena.allocate(C_POINTER);
-        MemorySegment pathSegment = arena.allocateFrom(path);
+        try (Arena arena = Arena.ofConfined()) {
+            MemorySegment repoSegment = arena.allocate(C_POINTER);
+            MemorySegment pathSegment = arena.allocateFrom(path);
 
-        int ret = git_repository_open(repoSegment, pathSegment);
-        if (ret < 0) {
-            throw new GitException("Failed to open repository: " + getGitErrorMessage());
+            int ret = git_repository_open(repoSegment, pathSegment);
+            if (ret < 0) {
+                throw new GitException("Failed to open repository: " + getGitErrorMessage());
+            }
+            return new GitRepository(repoSegment.get(C_POINTER, 0), true);
         }
-        return new GitRepository(repoSegment.get(C_POINTER, 0), true);
     }
 
     /**
@@ -100,13 +102,14 @@ public final class Repository {
      * @throws GitException if the index cannot be retrieved.
      */
     public static GitIndex gitRepositoryIndex(GitRepository repo) throws GitException {
-        Arena arena = Arena.ofAuto();
-        MemorySegment indexSegment = arena.allocate(C_POINTER);
+        try (Arena arena = Arena.ofConfined()) {
+            MemorySegment indexSegment = arena.allocate(C_POINTER);
 
-        int ret = git_repository_index(indexSegment, repo.segment());
-        if (ret < 0) {
-            throw new GitException("Failed to get repository index: " + getGitErrorMessage());
+            int ret = git_repository_index(indexSegment, repo.segment());
+            if (ret < 0) {
+                throw new GitException("Failed to get repository index: " + getGitErrorMessage());
+            }
+            return new GitIndex(indexSegment.get(C_POINTER, 0), true);
         }
-        return new GitIndex(indexSegment.get(C_POINTER, 0), true);
     }
 }

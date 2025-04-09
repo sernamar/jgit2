@@ -26,13 +26,14 @@ public final class Commit {
      * @throws GitException if the commit cannot be found.
      */
     public static GitCommit gitCommitLookup(GitRepository repo, GitOid id) throws GitException {
-        Arena arena = Arena.ofAuto();
-        MemorySegment commitSegment = arena.allocate(C_POINTER);
-        int ret = git_commit_lookup(commitSegment, repo.segment(), id.segment());
-        if (ret < 0) {
-            throw new GitException("Failed to get the commit: " + getGitErrorMessage());
+        try (Arena arena = Arena.ofConfined()) {
+            MemorySegment commitSegment = arena.allocate(C_POINTER);
+            int ret = git_commit_lookup(commitSegment, repo.segment(), id.segment());
+            if (ret < 0) {
+                throw new GitException("Failed to get the commit: " + getGitErrorMessage());
+            }
+            return new GitCommit(commitSegment.get(C_POINTER, 0), true);
         }
-        return new GitCommit(commitSegment.get(C_POINTER, 0), true);
     }
 
     /**

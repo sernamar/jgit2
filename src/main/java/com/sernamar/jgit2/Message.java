@@ -35,7 +35,6 @@ public final class Message {
      *
      * @param message       the message to be prettified.
      * @param stripComments `true` to remove comment lines, `false` to leave them in.
-
      * @return the prettified message.
      * @throws GitException if the prettification fails.
      */
@@ -56,17 +55,18 @@ public final class Message {
      * @throws GitException if the prettification fails.
      */
     public static String gitMessagePrettify(String message, boolean stripComments, char commentChar) throws GitException {
-        Arena arena = Arena.ofAuto();
-        MemorySegment outSegment = git_buf.allocate(arena);
-        MemorySegment messageSegment = arena.allocateFrom(message);
-        int ret = git_message_prettify(outSegment, messageSegment, stripComments ? 1 : 0, (byte) commentChar);
-        if (ret < 0) {
-            throw new GitException("Failed to prettify message: " + getGitErrorMessage());
+        try (Arena arena = Arena.ofConfined()) {
+            MemorySegment outSegment = git_buf.allocate(arena);
+            MemorySegment messageSegment = arena.allocateFrom(message);
+            int ret = git_message_prettify(outSegment, messageSegment, stripComments ? 1 : 0, (byte) commentChar);
+            if (ret < 0) {
+                throw new GitException("Failed to prettify message: " + getGitErrorMessage());
+            }
+            String prettifiedMessage = git_buf.ptr(outSegment).getString(0);
+            // De-allocate native (off-heap) memory here, so there's no need to create a `AutoCloseable` `GitBuf` class
+            // for now and de-allocate the memory in the `close` method.
+            git_buf_dispose(outSegment);
+            return prettifiedMessage;
         }
-        String prettifiedMessage = git_buf.ptr(outSegment).getString(0);
-        // De-allocate native (off-heap) memory here, so there's no need to create a `AutoCloseable` `GitBuf` class
-        // for now and de-allocate the memory in the `close` method.
-        git_buf_dispose(outSegment);
-        return prettifiedMessage;
     }
 }

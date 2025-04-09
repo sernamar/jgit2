@@ -34,15 +34,16 @@ public final class Signature {
      * @throws GitException if the signature could not be created.
      */
     public static GitSignature gitSignatureNow(String name, String email) throws GitException {
-        Arena arena = Arena.ofAuto();
-        MemorySegment signatureSegment = arena.allocate(C_POINTER);
-        MemorySegment nameSegment = arena.allocateFrom(name);
-        MemorySegment emailSegment = arena.allocateFrom(email);
-        int ret = git_signature_now(signatureSegment, nameSegment, emailSegment);
-        if (ret < 0) {
-            throw new GitException("Failed to create signature: " + getGitErrorMessage());
+        try (Arena arena = Arena.ofConfined()) {
+            MemorySegment signatureSegment = arena.allocate(C_POINTER);
+            MemorySegment nameSegment = arena.allocateFrom(name);
+            MemorySegment emailSegment = arena.allocateFrom(email);
+            int ret = git_signature_now(signatureSegment, nameSegment, emailSegment);
+            if (ret < 0) {
+                throw new GitException("Failed to create signature: " + getGitErrorMessage());
+            }
+            return new GitSignature(signatureSegment.get(C_POINTER, 0), true);
         }
-        return new GitSignature(signatureSegment.get(C_POINTER, 0), true);
     }
 
     /**

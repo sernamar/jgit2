@@ -23,20 +23,21 @@ public final class Common {
      * @throws GitException if the version cannot be retrieved.
      */
     public static String gitLibgit2Version() throws GitException {
-        Arena arena = Arena.ofAuto();
-        MemorySegment majorSegment = arena.allocate(C_INT);
-        MemorySegment minorSegment = arena.allocate(C_INT);
-        MemorySegment revSegment = arena.allocate(C_INT);
+        try (Arena arena = Arena.ofConfined()) {
+            MemorySegment majorSegment = arena.allocate(C_INT);
+            MemorySegment minorSegment = arena.allocate(C_INT);
+            MemorySegment revSegment = arena.allocate(C_INT);
 
-        int ret = git_libgit2_version(majorSegment, minorSegment, revSegment);
-        if (ret < 0) {
-            throw new GitException("Failed to get libgit2 version: " + getGitErrorMessage());
+            int ret = git_libgit2_version(majorSegment, minorSegment, revSegment);
+            if (ret < 0) {
+                throw new GitException("Failed to get libgit2 version: " + getGitErrorMessage());
+            }
+
+            int major = majorSegment.get(C_INT, 0);
+            int minor = minorSegment.get(C_INT, 0);
+            int rev = revSegment.get(C_INT, 0);
+
+            return major + "." + minor + "." + rev;
         }
-	
-        int major = majorSegment.get(C_INT, 0);
-        int minor = minorSegment.get(C_INT, 0);
-        int rev = revSegment.get(C_INT, 0);
-	
-        return major + "." + minor + "." + rev;
     }
 }

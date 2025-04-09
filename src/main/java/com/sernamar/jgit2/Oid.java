@@ -62,10 +62,11 @@ public final class Oid {
         if (length < requiredLength) {
             throw new IllegalArgumentException("Buffer size is too small");
         }
-        Arena arena = Arena.ofAuto();
-        MemorySegment stringSegment = arena.allocate(length);
-        MemorySegment ret = git_oid_tostr(stringSegment, length, id.segment());
-        return ret.getString(0);
+        try (Arena arena = Arena.ofConfined()) {
+            MemorySegment stringSegment = arena.allocate(length);
+            MemorySegment ret = git_oid_tostr(stringSegment, length, id.segment());
+            return ret.getString(0);
+        }
     }
 
     /**
@@ -111,14 +112,15 @@ public final class Oid {
      * @throws GitException if the addition fails.
      */
     public static int gitOidShortenAdd(GitOidShorten shortenerId, String textId) throws GitException {
-        Arena arena = Arena.ofAuto();
-        MemorySegment textIdSegment = arena.allocateFrom(textId);
-        int ret = git_oid_shorten_add(shortenerId.segment(), textIdSegment);
-        if (ret == GIT_ERROR_INVALID()) {
-            throw new GitException("Attempting to add more than the maximum number of OIDs: " + getGitErrorMessage());
-        } else if (ret < 0) {
-            throw new GitException("Failed to add OID to shortener: " + getGitErrorMessage());
+        try (Arena arena = Arena.ofConfined()) {
+            MemorySegment textIdSegment = arena.allocateFrom(textId);
+            int ret = git_oid_shorten_add(shortenerId.segment(), textIdSegment);
+            if (ret == GIT_ERROR_INVALID()) {
+                throw new GitException("Attempting to add more than the maximum number of OIDs: " + getGitErrorMessage());
+            } else if (ret < 0) {
+                throw new GitException("Failed to add OID to shortener: " + getGitErrorMessage());
+            }
+            return ret;
         }
-        return ret;
     }
 }
