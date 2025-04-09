@@ -7,7 +7,6 @@ import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
 
 import static com.sernamar.jgit2.bindings.git2_1.git_message_prettify;
-import static com.sernamar.jgit2.bindings.git2_2.git_buf_dispose;
 import static com.sernamar.jgit2.utils.GitError.getGitErrorMessage;
 
 public final class Message {
@@ -62,11 +61,9 @@ public final class Message {
             if (ret < 0) {
                 throw new GitException("Failed to prettify message: " + getGitErrorMessage());
             }
-            String prettifiedMessage = git_buf.ptr(outSegment).getString(0);
-            // De-allocate native (off-heap) memory here, so there's no need to create a `AutoCloseable` `GitBuf` class
-            // for now and de-allocate the memory in the `close` method.
-            git_buf_dispose(outSegment);
-            return prettifiedMessage;
+            try (GitBuf gitBuf = new GitBuf(outSegment, true)) {
+                return gitBuf.contents();
+            }
         }
     }
 }
