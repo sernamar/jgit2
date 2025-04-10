@@ -35,10 +35,10 @@ public final class Refs {
     public static GitOid gitReferenceNameToId(GitRepository repo, String name) throws GitException {
         try (Arena arena = Arena.ofConfined()) {
             MemorySegment oidSegment = git_oid.allocate(arena);
+            MemorySegment repoSegment = repo.segment();
             MemorySegment refNameSegment = arena.allocateFrom(name);
 
-            int ret = git_reference_name_to_id(oidSegment, repo.segment(), refNameSegment);
-
+            int ret = git_reference_name_to_id(oidSegment, repoSegment, refNameSegment);
             if (ret == GIT_ENOTFOUND()) {
                 return null;
             } else if (ret == GIT_EINVALIDSPEC()) {

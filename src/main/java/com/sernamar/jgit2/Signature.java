@@ -33,6 +33,7 @@ public final class Signature {
             MemorySegment signatureSegment = arena.allocate(C_POINTER);
             MemorySegment nameSegment = arena.allocateFrom(name);
             MemorySegment emailSegment = arena.allocateFrom(email);
+
             int ret = git_signature_now(signatureSegment, nameSegment, emailSegment);
             if (ret < 0) {
                 throw new GitException("Failed to create signature: " + getGitErrorMessage());

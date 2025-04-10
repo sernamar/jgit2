@@ -48,8 +48,9 @@ public final class Repository {
         try (Arena arena = Arena.ofConfined()) {
             MemorySegment repoSegment = arena.allocate(C_POINTER);
             MemorySegment pathSegment = arena.allocateFrom(path);
+            int isBareInt = isBare ? 1 : 0;
 
-            int ret = git_repository_init(repoSegment, pathSegment, isBare ? 1 : 0);
+            int ret = git_repository_init(repoSegment, pathSegment, isBareInt);
             if (ret < 0) {
                 throw new GitException("Failed to initialize repository: " + getGitErrorMessage());
             }
@@ -104,8 +105,9 @@ public final class Repository {
     public static GitIndex gitRepositoryIndex(GitRepository repo) throws GitException {
         try (Arena arena = Arena.ofConfined()) {
             MemorySegment indexSegment = arena.allocate(C_POINTER);
+            MemorySegment repoSegment = repo.segment();
 
-            int ret = git_repository_index(indexSegment, repo.segment());
+            int ret = git_repository_index(indexSegment, repoSegment);
             if (ret < 0) {
                 throw new GitException("Failed to get repository index: " + getGitErrorMessage());
             }

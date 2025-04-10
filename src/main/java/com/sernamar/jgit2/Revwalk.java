@@ -37,7 +37,9 @@ public final class Revwalk {
     public static GitRevwalk gitRevwalkNew(GitRepository repo) throws GitException {
         try (Arena arena = Arena.ofConfined()) {
             MemorySegment walkSegment = arena.allocate(C_POINTER);
-            int ret = git_revwalk_new(walkSegment, repo.segment());
+            MemorySegment repoSegment = repo.segment();
+
+            int ret = git_revwalk_new(walkSegment, repoSegment);
             if (ret < 0) {
                 throw new GitException("Failed to create revwalk: " + getGitErrorMessage());
             }
@@ -52,7 +54,9 @@ public final class Revwalk {
      * @throws GitException if the push fails.
      */
     public static void gitRevwalkPushHead(GitRevwalk walk) throws GitException {
-        int ret = git_revwalk_push_head(walk.segment());
+        MemorySegment walkSegment = walk.segment();
+
+        int ret = git_revwalk_push_head(walkSegment);
         if (ret < 0) {
             throw new GitException("Failed to push HEAD: " + getGitErrorMessage());
         }
@@ -82,7 +86,9 @@ public final class Revwalk {
      * @throws GitException if the sorting mode could not be set.
      */
     public static void gitRevwalkSorting(GitRevwalk walk, int sortMode) throws GitException {
-        int ret = git_revwalk_sorting(walk.segment(), sortMode);
+        MemorySegment walkSegment = walk.segment();
+
+        int ret = git_revwalk_sorting(walkSegment, sortMode);
         if (ret < 0) {
             throw new GitException("Failed to set revwalk sorting: " + getGitErrorMessage());
         }
@@ -107,7 +113,9 @@ public final class Revwalk {
     public static GitOid gitRevwalkNext(GitRevwalk walk) {
         try (Arena arena = Arena.ofConfined()) {
             MemorySegment oidSegment = git_oid.allocate(arena);
-            int ret = git_revwalk_next(oidSegment, walk.segment());
+            MemorySegment walkSegment = walk.segment();
+
+            int ret = git_revwalk_next(oidSegment, walkSegment);
             if (ret == GIT_ITEROVER()) {
                 return null; // No more commits to iterate
             }

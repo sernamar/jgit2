@@ -57,7 +57,10 @@ public final class Message {
         try (Arena arena = Arena.ofConfined()) {
             MemorySegment outSegment = git_buf.allocate(arena);
             MemorySegment messageSegment = arena.allocateFrom(message);
-            int ret = git_message_prettify(outSegment, messageSegment, stripComments ? 1 : 0, (byte) commentChar);
+            int stripCommentsInt = stripComments ? 1 : 0;
+            byte commentCharByte = (byte) commentChar;
+
+            int ret = git_message_prettify(outSegment, messageSegment, stripCommentsInt, commentCharByte);
             if (ret < 0) {
                 throw new GitException("Failed to prettify message: " + getGitErrorMessage());
             }

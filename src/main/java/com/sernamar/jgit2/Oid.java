@@ -33,6 +33,7 @@ public final class Oid {
         try (Arena arena = Arena.ofConfined()) {
             MemorySegment oidSegment = git_oid.allocate(arena);
             MemorySegment stringSegment = arena.allocateFrom(string);
+
             int ret = git_oid_fromstr(oidSegment, stringSegment);
             if (ret < 0) {
                 throw new GitException("Failed to convert string to OID: " + getGitErrorMessage());
@@ -66,6 +67,7 @@ public final class Oid {
         try (Arena arena = Arena.ofConfined()) {
             MemorySegment stringSegment = arena.allocate(length);
             MemorySegment oidSegment = id.toSegment(arena);
+
             MemorySegment ret = git_oid_tostr(stringSegment, length, oidSegment);
             return ret.getString(0);
         }
@@ -115,8 +117,10 @@ public final class Oid {
      */
     public static int gitOidShortenAdd(GitOidShorten shortenerId, String textId) throws GitException {
         try (Arena arena = Arena.ofConfined()) {
+            MemorySegment shortenerIdSegment = shortenerId.segment();
             MemorySegment textIdSegment = arena.allocateFrom(textId);
-            int ret = git_oid_shorten_add(shortenerId.segment(), textIdSegment);
+
+            int ret = git_oid_shorten_add(shortenerIdSegment, textIdSegment);
             if (ret == GIT_ERROR_INVALID()) {
                 throw new GitException("Attempting to add more than the maximum number of OIDs: " + getGitErrorMessage());
             } else if (ret < 0) {

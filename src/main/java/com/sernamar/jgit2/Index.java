@@ -37,8 +37,10 @@ public final class Index {
      */
     public static void gitIndexAddByPath(GitIndex index, String path) throws GitException {
         try (Arena arena = Arena.ofConfined()) {
+            MemorySegment indexSegment = index.segment();
             MemorySegment pathSegment = arena.allocateFrom(path);
-            int ret = git_index_add_bypath(index.segment(), pathSegment);
+
+            int ret = git_index_add_bypath(indexSegment, pathSegment);
             if (ret < 0) {
                 throw new GitException("Failed to add file to index: " + getGitErrorMessage());
             }
@@ -53,7 +55,9 @@ public final class Index {
      * @throws GitException if the index cannot be written.
      */
     public static void gitIndexWrite(GitIndex index) throws GitException {
-        int ret = git_index_write(index.segment());
+        MemorySegment indexSegment = index.segment();
+
+        int ret = git_index_write(indexSegment);
         if (ret < 0) {
             throw new GitException("Failed to write index: " + getGitErrorMessage());
         }
@@ -80,7 +84,9 @@ public final class Index {
     public static GitOid gitIndexWriteTree(GitIndex index) throws GitException {
         try (Arena arena = Arena.ofConfined()) {
             MemorySegment oidSegment = git_oid.allocate(arena);
-            int ret = git_index_write_tree(oidSegment, index.segment());
+            MemorySegment indexSegment = index.segment();
+
+            int ret = git_index_write_tree(oidSegment, indexSegment);
             if (ret == GIT_EUNMERGED()) {
                 throw new GitException("Cannot write tree with unmerged entries: " + getGitErrorMessage());
             } else if (ret < 0) {

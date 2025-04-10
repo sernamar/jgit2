@@ -28,8 +28,10 @@ public final class Commit {
     public static GitCommit gitCommitLookup(GitRepository repo, GitOid id) throws GitException {
         try (Arena arena = Arena.ofConfined()) {
             MemorySegment commitSegment = arena.allocate(C_POINTER);
+            MemorySegment repoSegment = repo.segment();
             MemorySegment oidSegment = id.toSegment(arena);
-            int ret = git_commit_lookup(commitSegment, repo.segment(), oidSegment);
+
+            int ret = git_commit_lookup(commitSegment, repoSegment, oidSegment);
             if (ret < 0) {
                 throw new GitException("Failed to get the commit: " + getGitErrorMessage());
             }
@@ -47,7 +49,10 @@ public final class Commit {
      * @return the message of a commit
      */
     public static String gitCommitMessage(GitCommit commit) {
-        return git_commit_message(commit.segment()).getString(0);
+        MemorySegment commitSegment = commit.segment();
+
+        MemorySegment messageSegment = git_commit_message(commitSegment);
+        return messageSegment.getString(0);
     }
 
     /**
@@ -96,10 +101,15 @@ public final class Commit {
                                           GitCommit... parents) throws GitException {
         try (Arena arena = Arena.ofConfined()) {
             MemorySegment oidSegment = git_oid.allocate(arena);
+            MemorySegment repoSegment = repo.segment();
             MemorySegment updateRefSegment = arena.allocateFrom(updateRef);
+            MemorySegment authorSegment = author.segment();
+            MemorySegment committerSegment = committer.segment();
             MemorySegment messageEncodingSegment =
                     (messageEncoding == null) ? MemorySegment.NULL : arena.allocateFrom(messageEncoding);
             MemorySegment messageSegment = arena.allocateFrom(message);
+            MemorySegment treeSegment = tree.segment();
+            int parentsCount = parents.length;
 
             // Convert parents to an array of MemorySegments
             MemorySegment[] parentSegments = Arrays.stream(parents)
@@ -107,7 +117,7 @@ public final class Commit {
                     .toArray(MemorySegment[]::new);
 
             // Create a FunctionDescriptor for the variadic parameters
-            MemoryLayout[] variadicLayouts = new MemoryLayout[parents.length];
+            MemoryLayout[] variadicLayouts = new MemoryLayout[parentsCount];
             Arrays.fill(variadicLayouts, C_POINTER);
 
 
@@ -116,14 +126,14 @@ public final class Commit {
             git_commit_create_v invoker = git_commit_create_v.makeInvoker(variadicLayouts);
             int ret = invoker.apply(
                     oidSegment,
-                    repo.segment(),
+                    repoSegment,
                     updateRefSegment,
-                    author.segment(),
-                    committer.segment(),
+                    authorSegment,
+                    committerSegment,
                     messageEncodingSegment,
                     messageSegment,
-                    tree.segment(),
-                    parents.length,
+                    treeSegment,
+                    parentsCount,
                     (Object[]) parentSegments
             );
             if (ret < 0) {
@@ -140,7 +150,10 @@ public final class Commit {
      * @return the committer of a commit.
      */
     public static GitSignature gitCommitCommitter(GitCommit commit) {
-        return new GitSignature(git_commit_committer(commit.segment()), false);
+        MemorySegment commitSegment = commit.segment();
+
+        MemorySegment commiterSegment = git_commit_committer(commitSegment);
+        return new GitSignature(commiterSegment, false);
     }
 
     /**
@@ -150,6 +163,9 @@ public final class Commit {
      * @return the author of a commit.
      */
     public static GitSignature gitCommitAuthor(GitCommit commit) {
-        return new GitSignature(git_commit_author(commit.segment()), false);
+        MemorySegment commitSegment = commit.segment();
+
+        MemorySegment authorSegment = git_commit_author(commitSegment);
+        return new GitSignature(authorSegment, false);
     }
 }
