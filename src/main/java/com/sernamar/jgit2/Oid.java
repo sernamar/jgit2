@@ -55,6 +55,27 @@ public final class Oid {
      * return value can always be printed.
      *
      * @param id     the oid structure to format.
+     * @return the formatted string.
+     */
+    public static String gitOidToString(GitOid id) {
+        // TODO: Support SHA256 (see: https://libgit2.org/docs/reference/main/common/git_feature_t.html)
+        long defaultLength = GIT_OID_SHA1_HEXSIZE() + 1;
+        return gitOidToString(id, defaultLength);
+    }
+
+    /**
+     * Format a GitOid object into a hex format String.
+     * <p>
+     * If the buffer is smaller than the size of a hex-formatted oid string
+     * plus an additional byte (GIT_OID_SHA_HEXSIZE + 1 for SHA1 or
+     * GIT_OID_SHA256_HEXSIZE + 1 for SHA256), then the function will
+     * throw an IllegalArgumentException.
+     * <p>
+     * If there are any input parameter errors (out == null, n == 0,
+     * oid == null), then an empty string is returned, so that the
+     * return value can always be printed.
+     *
+     * @param id     the oid structure to format.
      * @param length the size of the out buffer.
      * @return the formatted string.
      */
