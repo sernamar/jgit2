@@ -56,6 +56,7 @@ public final class Oid {
      *
      * @param id     the oid structure to format.
      * @return the formatted string.
+     * @throws IllegalArgumentException if the buffer size is too small.
      */
     public static String gitOidToString(GitOid id) {
         // TODO: Support SHA256 (see: https://libgit2.org/docs/reference/main/common/git_feature_t.html)
@@ -78,6 +79,7 @@ public final class Oid {
      * @param id     the oid structure to format.
      * @param length the size of the out buffer.
      * @return the formatted string.
+     * @throws IllegalArgumentException if the buffer size is too small.
      */
     public static String gitOidToString(GitOid id, long length) {
         // TODO: Support SHA256 (see: https://libgit2.org/docs/reference/main/common/git_feature_t.html)
