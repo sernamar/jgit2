@@ -10,6 +10,8 @@ import java.nio.file.Paths;
 import java.util.Comparator;
 import java.util.stream.Stream;
 
+import static com.sernamar.jgit2.Refs.gitReferenceNameToId;
+
 public class TestUtils {
 
     static final String NAME = "name";
@@ -31,6 +33,17 @@ public class TestUtils {
                         MESSAGE,
                         tree);
             }
+        }
+    }
+
+    static void create3Branches(String path) throws GitException {
+        try (GitRepository repo = Repository.gitRepositoryOpen(path)) {
+            GitOid commitId = gitReferenceNameToId(repo, "HEAD");
+            assert commitId != null;
+            GitCommit commit = Commit.gitCommitLookup(repo, commitId);
+            Branch.gitBranchCreate(repo, "branch1", commit);
+            Branch.gitBranchCreate(repo, "branch2", commit);
+            Branch.gitBranchCreate(repo, "branch3", commit);
         }
     }
 

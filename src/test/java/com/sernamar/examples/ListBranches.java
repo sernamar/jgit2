@@ -3,6 +3,11 @@ package com.sernamar.examples;
 import com.sernamar.jgit2.*;
 import com.sernamar.jgit2.utils.GitException;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.sernamar.jgit2.Branch.gitBranchName;
+import static com.sernamar.jgit2.Branch.gitBranchNext;
 import static com.sernamar.jgit2.Commit.gitCommitCreateV;
 import static com.sernamar.jgit2.Global.gitLibgit2Init;
 import static com.sernamar.jgit2.Global.gitLibgit2Shutdown;
@@ -15,7 +20,7 @@ import static com.sernamar.jgit2.Signature.gitSignatureNow;
 import static com.sernamar.jgit2.TestUtils.deleteRepoDirectory;
 import static com.sernamar.jgit2.Tree.gitTreeLookup;
 
-public class CreateBranches {
+public class ListBranches {
     private static final String PATH = "/tmp/repo";
     private static final String NAME = "sernamar";
     private static final String EMAIL = "sernamar@protonmail.com";
@@ -48,6 +53,17 @@ public class CreateBranches {
             try (GitCommit commit = Commit.gitCommitLookup(repo, commitId);
                  GitReference branchRef = Branch.gitBranchCreate(repo, branchName, commit)) {
                 System.out.println("Branch created: " + branchName);
+            }
+
+            // List branches
+            List<String> branches = new ArrayList<>();
+            try (GitBranchIterator branchIterator = Branch.gitBranchIteratorNew(repo, GitBranchT.LOCAL)) {
+                GitReference branchRef;
+                while ((branchRef = gitBranchNext(GitBranchT.LOCAL, branchIterator)) != null) {
+                    branches.add(gitBranchName(branchRef));
+                }
+                System.out.println("Branches: " + branches);
+
             }
         } catch (GitException e) {
             System.err.println(e.getMessage());
