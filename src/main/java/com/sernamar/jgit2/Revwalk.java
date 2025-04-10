@@ -108,7 +108,7 @@ public final class Revwalk {
      * The revision walker is reset when the walk is over.
      *
      * @param walk the walker to pop the commit from.
-     * @return the oid of the next commit.
+     * @return the oid of the next commit or null if there are no more commits.
      */
     public static GitOid gitRevwalkNext(GitRevwalk walk) {
         try (Arena arena = Arena.ofConfined()) {
