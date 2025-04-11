@@ -48,4 +48,8 @@ public final class Clone {
             return new GitRepository(repoSegment.get(C_POINTER, 0), true);
         }
     }
+
+    // TODO: Add an overloaded gitClone method that accepts a GitCloneOptions argument,
+    // allowing callers to customize clone behavior. This will map to the full native signature:
+    // int git_clone(git_repository **out, const char *url, const char *local_path, const git_clone_options *options);
 }

@@ -229,7 +229,11 @@ This section tracks the implementation of Java bindings for =libgit2= functions,
 
 The first level represents the major functional groups from =libgit2=, and the second level lists the specific functions within each group.
 
-The checkboxes indicate the status of each: an =X= marks completed, an empty box indicates pending, and a =-= denotes partially implemented.
+Legend:
+- [X] Implemented.
+- [ ] Pending.
+- [-] Partially implemented.
+- Functions with the =(limited)= suffix are implemented but do not support full configuration or match the complete native =libgit2= signature (e.g., defaulted options structs).
 
 Below is the current progress on the implementation:
 - [ ] annotated_commit
@@ -260,7 +264,9 @@ Below is the current progress on the implementation:
 - [ ] cert
 - [ ] checkout
 - [ ] cherrypick
-- [ ] clone
+- [-] clone
+  - [ ] git_clone_options_init
+  - [X] git_clone =(limited)=
 - [-] commit
   - [X] git_commit_lookup
   - [ ] git_commit_lookup_prefix
